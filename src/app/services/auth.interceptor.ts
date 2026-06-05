@@ -1,22 +1,27 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { environment } from '../../environments/environment'; 
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-
-  const token = localStorage.getItem('token_jwt');
-
-
-  console.log('🛡️ Interceptor activado para la ruta:', req.url);
+  const token = localStorage.getItem('token'); 
+  let clonedReq = req;
 
 
   if (token) {
-    const cloned = req.clone({
+    clonedReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    return next(cloned);
   }
 
 
-  return next(req);
+  if (clonedReq.url.includes('http://localhost:8080')) {
+    const secureUrl = clonedReq.url.replace('http://localhost:8080', environment.apiUrl);
+    clonedReq = clonedReq.clone({ url: secureUrl });
+  }
+
+
+  console.log(`🛡️ Interceptor redirigiendo petición a: ${clonedReq.url}`);
+
+  return next(clonedReq);
 };
