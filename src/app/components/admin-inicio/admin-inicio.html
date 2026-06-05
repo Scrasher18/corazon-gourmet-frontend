@@ -1,0 +1,33 @@
+<div class="dashboard-welcome">
+  <h2>¡Bienvenido al Panel de Administración!</h2>
+  <p>Aquí tienes un resumen del estado actual de Corazón Gourmet hoy.</p>
+</div>
+
+<div class="metrics-grid">
+  <div class="metric-card card-personal">
+    <div class="card-icon">👥</div>
+    <div class="card-info">
+      <h3>Personal Activo</h3>
+      <p class="card-value">{{ totalPersonal }}</p>
+      <span class="card-sub">Personal operativo en el sistema</span>
+    </div>
+  </div>
+
+  <div class="metric-card card-menu">
+    <div class="card-icon">🍽️</div>
+    <div class="card-info">
+      <h3>Platos en Menú</h3>
+      <p class="card-value">{{ totalPlatos }}</p>
+      <span class="card-sub">Productos registrados</span>
+    </div>
+  </div>
+
+  <div class="metric-card card-sales">
+    <div class="card-icon">💰</div>
+    <div class="card-info">
+      <h3>Ventas del Día</h3>
+      <p class="card-value">S/ {{ ventasDelDia | number:'1.2-2' }}</p>
+      <span class="card-sub">Total acumulado</span>
+    </div>
+  </div>
+</div>

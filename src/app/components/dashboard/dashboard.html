@@ -1,0 +1,60 @@
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="logo-section">
+      <h2>Corazón Gourmet</h2>
+      <span class="role-badge" [ngClass]="'badge-' + usuarioRol.toLowerCase()">{{ usuarioRol }}</span>
+    </div>
+    
+    <nav class="nav-menu">
+      @if (usuarioRol === 'MESERO' || usuarioRol === 'ADMINISTRADOR') {
+        <a routerLink="pedido-registro" routerLinkActive="active" class="nav-item">
+          <i class="icon-home"></i> Registrar Comanda
+        </a>
+      }
+
+      @if (usuarioRol === 'CAJA' || usuarioRol === 'ADMINISTRADOR') {
+        <a routerLink="caja-cobros" routerLinkActive="active" class="nav-item">
+          <i class="icon-cash"></i> Módulo de Caja (Cobros)
+        </a>
+      }
+
+      @if (usuarioRol === 'MESERO' || usuarioRol === 'ADMINISTRADOR') {
+        <a routerLink="pedido-reporte" routerLinkActive="active" class="nav-item">
+          <i class="icon-orders"></i> Historial de Ventas
+        </a>
+      }
+
+      @if (usuarioRol === 'ADMINISTRADOR') {
+        <div class="admin-divider">ADMINISTRACIÓN</div>
+        <a routerLink="admin-inicio" routerLinkActive="active" class="nav-item">
+          <i class="icon-metrics"></i> Dashboard Métricas
+        </a>
+        <a routerLink="menu-gestion" routerLinkActive="active" class="nav-item">
+          <i class="icon-menu"></i> Menús y Platos
+        </a>
+        <a routerLink="usuario-gestion" routerLinkActive="active" class="nav-item">
+          <i class="icon-users"></i> Gestión de Usuarios
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+    </div>
+  </aside>
+
+  <div class="main-layout">
+    <header class="content-header">
+      <div class="header-title">
+        <h1>{{ usuarioRol === 'ADMINISTRADOR' ? 'Panel de Administración' : 'Panel de Operaciones' }}</h1>
+      </div>
+      <div class="user-profile">
+        <span>Bienvenido, <strong>{{ usuarioNombre }}</strong></span>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

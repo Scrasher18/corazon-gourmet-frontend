@@ -1,0 +1,280 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+
+:host {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+}
+
+
+.lg-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(-45deg, #f8fafc, #fee2e2, #f1f5f9, #fef2f2);
+  background-size: 400% 400%;
+  animation: gradientMovement 12s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.lg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, #dc26260a 0, #dc26260a 1px, transparent 0, transparent 50%),
+    repeating-linear-gradient(-45deg, #dc26260a 0, #dc26260a 1px, transparent 0, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+
+.lg-card {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  position: relative;
+  animation: slideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.top-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+}
+
+/* ── Encabezado Rojo Institucional ────────────────────────── */
+.lg-header {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+}
+
+.lg-logo-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 22px;
+  animation: wave 2s ease-in-out infinite;
+}
+
+.lg-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+.lg-tagline {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: #fee2e2;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.9;
+}
+
+
+.lg-body {
+  padding: 2rem;
+}
+
+.lg-field {
+  margin-bottom: 1.25rem;
+  opacity: 0;
+  animation: fadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lg-field:nth-child(1) { animation-delay: 0.18s; }
+.lg-field:nth-child(2) { animation-delay: 0.28s; }
+
+.lg-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.lg-input-wrap {
+  position: relative;
+}
+
+.lg-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.lg-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 14px 14px 44px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lg-input::placeholder {
+  color: #94a3b8;
+}
+
+.lg-input:focus {
+  border-color: #dc2626;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12);
+  transform: translateY(-1px);
+}
+
+.lg-input--error {
+  border-color: #ef4444 !important;
+  animation: shake 0.35s ease;
+}
+
+
+.lg-btn-wrap {
+  margin-top: 1.75rem;
+  opacity: 0;
+  animation: fadeIn 0.45s 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lg-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+}
+
+.lg-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+}
+
+.lg-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.lg-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.lg-btn--loading {
+  background: linear-gradient(135deg, #f87171 0%, #dc2626 100%) !important;
+}
+
+
+.lg-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  opacity: 0;
+  animation: fadeIn 0.45s 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lg-footer p {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+}
+
+.lg-roles {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.lg-role-pill {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.lg-role-pill--admin {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.lg-role-pill--mesero {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+
+@keyframes gradientMovement {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25%       { transform: rotate(-8deg); }
+  75%       { transform: rotate(8deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  60%       { transform: translateX(6px); }
+  80%       { transform: translateX(-3px); }
+}

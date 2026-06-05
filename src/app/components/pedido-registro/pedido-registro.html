@@ -1,0 +1,135 @@
+<div class="mobile-order-container">
+  
+  <div class="setup-section">
+    <div class="counter-box">
+      <span class="label">N° Mesa</span>
+      <div class="counter-controls">
+        <button (click)="ajustarMesa(-1)" type="button" class="btn-step">—</button>
+        <input 
+          type="number" 
+          [(ngModel)]="numMesa" 
+          (change)="validarMesa()" 
+          class="numeric-input" 
+          min="1" 
+        />
+        <button (click)="ajustarMesa(1)" type="button" class="btn-step">+</button>
+      </div>
+    </div>
+
+    <div class="counter-box">
+      <span class="label">Total Clientes</span>
+      <div class="counter-controls">
+        <button (click)="ajustarComensales(-1)" type="button" class="btn-step">—</button>
+        <span class="people-value">{{ totalComensales }}</span>
+        <button (click)="ajustarComensales(1)" type="button" class="btn-step">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tarifa-toggle-box" style="margin: 10px 0; padding: 10px; background: #f8fafc; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+    <span style="font-size: 14px; font-weight: 600; color: #334155;">♿ Aplicar Tarifa Especial (CONADIS)</span>
+    <input type="checkbox" [(ngModel)]="isConadis" (change)="cambiarTarifaGlobal()" style="width: 20px; height: 20px;" />
+  </div>
+
+  <div class="guests-wrapper">
+    @for (comensal of comensales; track comensal.id; let i = $index) {
+      <div class="customer-card" [class.has-order-disabled]="comensal.tipoServicio === 'NINGUNO'">
+        
+        <div class="customer-meta">
+          <span class="customer-badge">Cliente #{{ comensal.id }}</span>
+          @if (comensal.precio > 0) {
+            <span class="customer-price">S/ {{ comensal.precio.toFixed(2) }}</span>
+          }
+        </div>
+
+        <div class="tab-selector">
+          <button 
+            [class.active-tab]="comensal.tipoServicio === 'MENU'" 
+            (click)="seleccionarServicio(i, 'MENU')" 
+            type="button">⚡ Menú del Día
+          </button>
+          <button 
+            [class.active-tab]="comensal.tipoServicio === 'CARTA'" 
+            (click)="seleccionarServicio(i, 'CARTA')" 
+            type="button">🍽️ A la Carta
+          </button>
+          <button 
+            [class.active-tab]="comensal.tipoServicio === 'NINGUNO'" 
+            (click)="seleccionarServicio(i, 'NINGUNO')" 
+            type="button">Pasar
+          </button>
+        </div>
+
+        @if (comensal.tipoServicio === 'MENU') {
+          <div class="menu-list-container">
+            <span class="section-subtitle">1. Selecciona Segundo:</span>
+            @for (plato of opcionesMenu; track plato.id) {
+              <div 
+                class="menu-item-row" 
+                [class.row-selected]="comensal.platoSeleccionado === plato.nombreItem"
+                (click)="seleccionarPlato(i, plato)">
+                <div class="item-info">
+                  <span class="item-name">{{ plato.nombreItem }}</span>
+                </div>
+                <span class="item-price">S/ {{ ((isConadis ? plato.precioConadis : plato.precioNormal) || 0).toFixed(2) }}</span>
+              </div>
+            }
+
+            <span class="section-subtitle mt-3">2. Selecciona Entrada:</span>
+            <div class="sub-options-grid">
+              @for (ent of opcionesEntradas; track ent.id) {
+                <button 
+                  type="button" 
+                  [class.sub-picked]="comensal.entradaSeleccionada === ent.nombreItem"
+                  (click)="seleccionarEntrada(i, ent.nombreItem)">
+                  {{ ent.nombreItem }}
+                </button>
+              }
+            </div>
+
+            <span class="section-subtitle mt-3">3. Selecciona Bebida:</span>
+            <div class="sub-options-grid">
+              @for (beb of opcionesBebidas; track beb.id) {
+                <button 
+                  type="button" 
+                  [class.sub-picked]="comensal.bebidaSeleccionada === beb.nombreItem"
+                  (click)="seleccionarBebida(i, beb.nombreItem)">
+                  {{ beb.nombreItem }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (comensal.tipoServicio === 'CARTA') {
+          <div class="menu-list-container">
+            <span class="section-subtitle">1. Selecciona Plato a la Carta:</span>
+            @for (plato of opcionesCarta; track plato.id) {
+              <div 
+                class="menu-item-row" 
+                [class.row-selected]="comensal.platoSeleccionado === plato.nombreItem"
+                (click)="seleccionarPlato(i, plato)">
+                <div class="item-info">
+                  <span class="item-name">{{ plato.nombreItem }}</span>
+                </div>
+                <span class="item-price">S/ {{ ((isConadis ? plato.precioConadis : plato.precioNormal) || 0).toFixed(2) }}</span>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+    }
+  </div>
+
+  <footer class="compact-sticky-bar">
+    <div class="bar-total-section">
+      <span class="bar-total-label">Subtotal Mesa {{ numMesa }}</span>
+      <span class="bar-total-amount">S/ {{ calcularTotal().toFixed(2) }}</span>
+    </div>
+    <button (click)="guardarComanda()" class="btn-bar-action" type="button" [disabled]="calcularTotal() === 0">
+      Guardar e Ir a Otra Mesa 🔄
+    </button>
+  </footer>
+
+</div>

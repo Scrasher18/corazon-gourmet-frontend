@@ -1,0 +1,147 @@
+<div class="gestion-container">
+  <div class="modulo-header">
+    <div class="header-info">
+      <h2>Gestión del Menú y Platos</h2>
+      <p>Administra la carta del restaurante, precios, categorías y disponibilidad en tiempo real.</p>
+    </div>
+    <button (click)="abrirModal()" class="btn-primary">
+      <span class="icon-add">+</span> Nuevo Plato
+    </button>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" placeholder="Buscar por nombre de plato..." class="search-input" [(ngModel)]="txtBuscar" />
+    
+    <select class="filter-select" [(ngModel)]="categoriaSeleccionada">
+      <option value="">Todas las Categorías</option>
+      <option value="ENTRADA">Entradas</option>
+      <option value="PLATO_FONDO">Platos de Fondo</option>
+      <option value="PLATO_ESPECIAL">Platos Especiales</option>
+      <option value="BEBIDA">Bebidas Comunes</option>
+      <option value="BEBIDA_EXTRA">Bebidas Extras</option>
+      <option value="POSTRE_ADICIONAL">Postres Adicionales</option>
+    </select>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del Plato / Bebida</th>
+          <th>Categoría</th>
+          <th>Precio (S/)</th>
+          <th>Disponibilidad</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (plato of menusFiltrados; track plato.id) {
+          <tr>
+            <td><strong style="color: #64748b;">#{{ plato.id }}</strong></td>
+            <td><strong>{{ plato.nombreItem }}</strong></td>
+            <td>
+              <span class="badge badge-categoria">
+                {{ plato.categoria }}
+              </span>
+            </td>
+            <td>
+              <strong>
+                @if (plato.categoria === 'ENTRADA' || plato.categoria === 'BEBIDA') {
+                  <span style="color: #10b981;">Gratis (Menú)</span>
+                } @else {
+                  S/ {{ plato.precioNormal | number:'1.2-2' }}
+                }
+              </strong>
+            </td>
+            <td>
+              <span class="badge" 
+                    [class.badge-active]="plato.stockDisponible !== 0" 
+                    [class.badge-inactive]="plato.stockDisponible === 0">
+                {{ plato.stockDisponible !== 0 ? 'Disponible' : 'Agotado' }}
+              </span>
+            </td>
+            <td class="text-center">
+              <div class="actions-gap">
+                <button (click)="abrirModalEditar(plato)" class="btn-action btn-edit" title="Editar Plato">✏️</button>
+                <button (click)="toggleDisponibilidad(plato)" class="btn-action btn-status" title="Cambiar Disponibilidad">🔄</button>
+                <button (click)="eliminarPlato(plato)" class="btn-action btn-delete" title="Eliminar de la Carta" style="color: #ef4444;">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center" style="color: #7e8299; padding: 30px;">
+              No se encontraron platos que coincidan con los filtros.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (mostrarModal) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h3>{{ esEdicion ? 'Modificar Elemento del Menú' : 'Agregar Nuevo Elemento a la Carta' }}</h3>
+      <p class="modal-subtitle">Configure el producto de forma individual. El sistema gestionar los combos automáticamente.</p>
+      
+      <div class="form-group">
+        <label>Nombre del Elemento</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nuevoPlato.nombreItem"
+          placeholder="Ej. Lomo Saltado, Papa a la Huancaína, Chicha Morada" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Categoría del Elemento</label>
+        <select [(ngModel)]="nuevoPlato.categoria" (change)="verificarCategoriaPrecio()">
+          <option value="PLATO_FONDO">PLATO_FONDO</option>
+          <option value="PLATO_ESPECIAL">PLATO_ESPECIAL</option>
+          <option value="ENTRADA">ENTRADA</option>
+          <option value="BEBIDA">BEBIDA</option>
+          <option value="BEBIDA_EXTRA">BEBIDA_EXTRA</option>
+          <option value="POSTRE_ADICIONAL">POSTRE_ADICIONAL</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Precio Normal (S/)</label>
+        <input 
+          type="number" 
+          [(ngModel)]="nuevoPlato.precioNormal"
+          placeholder="0.00"
+          step="0.10"
+          [disabled]="nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA'"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Precio CONADIS (S/)</label>
+        <input 
+          type="number" 
+          [(ngModel)]="nuevoPlato.precioConadis"
+          placeholder="0.00"
+          step="0.10"
+          [disabled]="nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA'"
+        />
+      </div>
+
+      @if (nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA') {
+        <div class="alerta-gratis">
+          ✨ Al ser una Entrada o Bebida común, se integra al combo del menú con un valor base de S/ 0.00.
+        </div>
+      }
+
+      <div class="modal-actions">
+        <button (click)="cerrarModal()" class="btn-secondary">Cancelar</button>
+        <button (click)="guardarPlato()" [disabled]="!nuevoPlato.nombreItem" class="btn-save">
+          {{ esEdicion ? 'Guardar Cambios' : 'Registrar Componente' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

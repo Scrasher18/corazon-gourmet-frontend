@@ -1,0 +1,172 @@
+<div class="min-h-screen bg-gray-100 p-8 text-gray-800 antialiased selection:bg-emerald-500 selection:text-white">
+  
+  <section class="mb-6 rounded-xl border border-gray-300 bg-white p-6 shadow-sm" aria-labelledby="salon-title">
+    <div class="mb-4 flex items-center justify-between border-b border-gray-200 pb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🍽️</span>
+        <h3 id="salon-title" class="text-xl font-bold text-gray-900">Mesas Activas en Salón</h3>
+      </div>
+      <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-600 border border-red-200">
+        {{ mesasAbiertas.length }} pendientes
+      </span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      @if (mesasAbiertas.length === 0) {
+        <div class="col-span-full rounded-lg border border-dashed border-emerald-500 bg-emerald-50 p-6 text-center">
+          <p class="font-semibold text-emerald-800">✨ ¡Todo al día! No hay cuentas pendientes de pago en este momento.</p>
+        </div>
+      } @else {
+        @for (mesaNum of mesasAbiertas; track mesaNum) {
+          <button 
+            type="button"
+            class="flex items-center gap-3 rounded-lg border p-3 text-left transition-all duration-150 cursor-pointer"
+            [class.border-emerald-600]="numeroMesa === mesaNum.toString()"
+            [class.bg-emerald-50]="numeroMesa === mesaNum.toString()"
+            [class.ring-2]="numeroMesa === mesaNum.toString()"
+            [class.ring-emerald-600/20]="numeroMesa === mesaNum.toString()"
+            [class.border-gray-300]="numeroMesa !== mesaNum.toString()"
+            [class.bg-white]="numeroMesa !== mesaNum.toString()"
+            [class.hover:bg-gray-50]="numeroMesa !== mesaNum.toString()"
+            [class.hover:border-emerald-300]="numeroMesa !== mesaNum.toString()"
+            (click)="seleccionarMesa(mesaNum)"
+            [attr.aria-pressed]="numeroMesa === mesaNum.toString()">
+            
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-xl"
+                 [class.bg-emerald-200]="numeroMesa === mesaNum.toString()"
+                 [class.text-emerald-800]="numeroMesa === mesaNum.toString()"
+                 [class.bg-gray-100]="numeroMesa !== mesaNum.toString()"
+                 [class.text-gray-700]="numeroMesa !== mesaNum.toString()">
+              🪑
+            </div>
+            
+            <div class="flex flex-col">
+              <span class="font-bold text-sm text-gray-900">Mesa {{ mesaNum }}</span>
+              <span class="text-[11px] font-bold text-red-600 uppercase tracking-wider">Por Cobrar</span>
+            </div>
+          </button>
+        }
+      }
+    </div>
+  </section>
+
+  <div class="mb-6 rounded-xl border border-gray-300 bg-white p-6 shadow-sm">
+    <div class="max-w-lg">
+      <label for="inputMesa" class="mb-2 block text-xs font-bold uppercase tracking-wider text-gray-900">
+        Búsqueda Rápida de Comanda
+      </label>
+      <div class="flex gap-2">
+        <div class="relative flex flex-1 items-center">
+          <span class="absolute left-3 font-bold text-gray-900">#</span>
+          <input 
+            id="inputMesa"
+            type="number" 
+            [(ngModel)]="numeroMesa" 
+            placeholder="Ingrese número de mesa..." 
+            (keyup.enter)="buscarMesa()"
+            class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-7 pr-3 font-semibold text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm"
+          />
+        </div>
+        <button type="button" (click)="buscarMesa()" 
+                class="flex items-center justify-center rounded-lg border-2 border-gray-900 bg-transparent px-5 py-2 text-sm font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-150 cursor-pointer whitespace-nowrap">
+          🔍 Consultar Cuenta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (pedidoActivo) {
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 items-start">
+      
+      <article class="rounded-xl border border-gray-300 bg-white shadow-sm overflow-hidden lg:col-span-2">
+        <div class="flex items-center justify-between border-b border-gray-300 bg-gray-100 p-4">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🧾</span>
+            <h3 class="text-sm font-bold text-gray-900">Detalle de Consumo — Mesa {{ pedidoActivo.mesa }}</h3>
+          </div>
+          <span class="rounded-full bg-emerald-100 border border-emerald-300 px-3 py-1 text-xs font-bold text-emerald-800">
+            🕒 {{ pedidoActivo.fecha | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+        </div>
+        
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-left">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-300">
+                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900">Producto / Plato</th>
+                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900">Acompañamiento</th>
+                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900">Bebida</th>
+                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900 text-right">Precio Unitario</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              @for (item of listaDetalles; track item.id) {
+                <tr class="hover:bg-gray-50/50 transition-colors">
+                  <td class="px-5 py-4 font-bold text-gray-900 text-sm">{{ item.menu?.nombreItem }}</td>
+                  <td class="px-5 py-4 text-sm">
+                    <span [class]="item.entradaSeleccionada ? 'rounded bg-gray-100 border border-gray-300 px-2 py-0.5 font-semibold text-gray-900' : 'text-gray-400 italic font-normal'">
+                      {{ item.entradaSeleccionada || 'Sin Entrada' }}
+                    </span>
+                  </td>
+                  <td class="px-5 py-4 text-sm">
+                    <span [class]="item.bebidaSeleccionada ? 'rounded bg-gray-100 border border-gray-300 px-2 py-0.5 font-semibold text-gray-900' : 'text-gray-400 italic font-normal'">
+                      {{ item.bebidaSeleccionada || 'Sin Bebida' }}
+                    </span>
+                  </td>
+                  <td class="px-5 py-4 text-right font-bold text-gray-900 text-sm tabular-nums">
+                    S/ {{ item.precioUnitario | number:'1.2-2' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <aside class="rounded-xl border border-emerald-500/30 bg-white p-5 shadow-md lg:sticky lg:top-6 relative">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+        <h3 class="mb-4 border-b border-gray-200 pb-3 font-bold text-gray-900 text-base">💵 Cierre de Comprobante</h3>
+        
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label for="selectPago" class="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+              Método de Pago Seleccionado
+            </label>
+            <select id="selectPago" class="rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm font-semibold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none">
+              <option value="EFECTIVO">💵 Efectivo Soles</option>
+              <option value="TARJETA">💳 Tarjeta de Débito / Crédito</option>
+            </select>
+          </div>
+          
+          <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 flex flex-col gap-2">
+            <div class="flex justify-between items-center text-xs text-gray-700">
+              <span>Items de Menú Diario:</span>
+              <span class="font-bold text-gray-900 bg-gray-200 px-2 py-0.5 rounded-full text-[11px]">{{ pedidoActivo.cantidadMenu || 0 }} u.</span>
+            </div>
+            <div class="flex justify-between items-center text-xs text-gray-700">
+              <span>Platos a la Carta:</span>
+              <span class="font-bold text-gray-900 bg-gray-200 px-2 py-0.5 rounded-full text-[11px]">{{ pedidoActivo.cantidadEspecial || 0 }} u.</span>
+            </div>
+          </div>
+          
+          <hr class="border-t border-dashed border-gray-300 my-1">
+          
+          <div class="flex items-center justify-between rounded-lg border border-emerald-400 bg-emerald-50 p-4 shadow-inner">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Total Neto a Cobrar:</span>
+            <span class="text-2xl font-black text-emerald-700 tracking-tight tabular-nums">
+              S/ {{ pedidoActivo.montoTotal | number:'1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <button type="button" (click)="cobrarYEmitirBoleta()" 
+                  class="w-full rounded-lg bg-emerald-600 p-3.5 text-sm font-extrabold text-gray-900 border-2 border-emerald-700 shadow-md hover:bg-emerald-500 transition-all duration-150 cursor-pointer active:scale-[0.99]">
+            🖨️ Procesar Pago y Emitir Boleta
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  }
+</div>

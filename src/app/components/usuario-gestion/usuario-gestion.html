@@ -1,0 +1,143 @@
+<div class="gestion-container">
+  <div class="modulo-header">
+    <div class="header-info">
+      <h2>Gestión de Personal</h2>
+      <p>Administra las cuentas de los meseros, cajeros y personal autorizado del sistema.</p>
+    </div>
+    <button (click)="abrirModal()" class="btn-primary">
+      <span class="icon-add">+</span> Nuevo Usuario
+    </button>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" placeholder="Buscar por DNI o Nombre..." class="search-input" [(ngModel)]="txtBuscar" />
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>DNI</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Teléfono</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (usuario of usuariosFiltrados; track usuario.dni) {
+          <tr>
+            <td><strong>{{ usuario.dni }}</strong></td>
+            <td>{{ usuario.nombre }}</td>
+            <td>{{ usuario.apellido || '-' }}</td>
+            <td>{{ usuario.telefono || '-' }}</td>
+            <td>
+              <span class="badge" [ngClass]="'badge-' + usuario.rol.toLowerCase()">
+                {{ usuario.rol }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" 
+                    [class.badge-active]="usuario.activo" 
+                    [class.badge-inactive]="!usuario.activo">
+                {{ usuario.activo ? 'Activo' : 'Inhabilitado' }}
+              </span>
+            </td>
+            <td class="text-center">
+              <div class="actions-gap">
+                <button (click)="abrirModalEditar(usuario)" class="btn-action btn-edit" title="Editar">✏️</button>
+                <button (click)="toggleEstado(usuario.dni)" class="btn-action btn-status" title="Cambiar Estado">🚫</button>
+                <button (click)="eliminarTrabajador(usuario.dni, usuario.nombre)" class="btn-action btn-delete" title="Eliminar" style="color: #ef4444;">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="text-center" style="color: #7e8299; padding: 30px;">
+              No se encontraron usuarios que coincidan con la búsqueda.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (mostrarModal) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h3>{{ esEdicion ? 'Modificar Personal' : 'Registrar Nuevo Personal' }}</h3>
+      <p class="modal-subtitle">
+        {{ esEdicion ? 'Actualiza los datos del trabajador seleccionado.' : 'Ingresa las credenciales del nuevo trabajador para el sistema.' }}
+      </p>
+      
+      <div class="form-group">
+        <label>Documento de Identidad (DNI)</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nuevoUsuario.dni" 
+          placeholder="Ej. 74839201" 
+          maxlength="8" 
+          [disabled]="esEdicion" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Nombre</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nuevoUsuario.nombre" 
+          placeholder="Ej. Juan" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Apellido</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nuevoUsuario.apellido" 
+          placeholder="Ej. Pérez" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nuevoUsuario.telefono" 
+          placeholder="Ej. 987654321" 
+          maxlength="9"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Rol asignado</label>
+        <select [(ngModel)]="nuevoUsuario.rol" [disabled]="esEdicion">
+          <option value="MESERO">Mesero</option>
+          <option value="CAJA">Cajero</option>
+        </select>
+      </div>
+
+      @if (!esEdicion) {
+        <div class="form-group">
+          <label>Contraseña del Sistema</label>
+          <input 
+            type="text" 
+            [value]="nuevoUsuario.dni.length >= 4 ? 'CG@' + nuevoUsuario.dni.substring(0,4) : 'CG@[Primeros 4 dígitos del DNI]'" 
+            disabled 
+            style="background-color: #f8fafc; color: #64748b; font-weight: 500; border-style: dashed;"
+          />
+        </div>
+      }
+
+      <div class="modal-actions">
+        <button (click)="cerrarModal()" class="btn-secondary">Cancelar</button>
+        <button (click)="guardarUsuario()" class="btn-save">
+          {{ esEdicion ? 'Actualizar Cambios' : 'Guardar Trabajador' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,77 @@
+<div class="lg-wrap">
+  <div class="lg-pattern"></div>
+  
+  <div class="lg-card">
+    <div class="top-accent"></div>
+    
+    <div class="lg-header">
+      <div class="lg-logo-ring">❤️</div>
+      <h2 class="lg-brand">Corazón Gourmet</h2>
+      <p class="lg-tagline">Sistema de Gestión e Inclusión</p>
+    </div>
+
+    <div class="lg-body">
+      <form (ngSubmit)="onLogin()">
+        
+        <div class="lg-field" style="animation-delay: 0.18s;">
+          <label class="lg-label">Documento de Identidad (DNI)</label>
+          <div class="lg-input-wrap">
+            <lucide-icon [name]="UserIcon" class="lg-icon"></lucide-icon>
+            <input 
+              type="text" 
+              name="dni" 
+              [(ngModel)]="dni" 
+              maxLength="8" 
+              placeholder="Ingresa tu DNI" 
+              class="lg-input"
+              [class.lg-input--error]="showError"
+            >
+          </div>
+        </div>
+
+        <div class="lg-field" style="animation-delay: 0.28s;">
+          <label class="lg-label">Contraseña</label>
+          <div class="lg-input-wrap">
+            <lucide-icon [name]="KeyIcon" class="lg-icon"></lucide-icon>
+            <input 
+              type="password" 
+              name="password" 
+              [(ngModel)]="password" 
+              placeholder="••••••••" 
+              class="lg-input"
+              [class.lg-input--error]="showError"
+            >
+          </div>
+        </div>
+
+        <div class="lg-btn-wrap">
+          <button 
+            type="submit" 
+            [disabled]="isLoading" 
+            class="lg-btn" 
+            [class.lg-btn--loading]="isLoading"
+          >
+            @if (isLoading) {
+              <div class="spinner"></div>
+              <span>Validando acceso...</span>
+            } @else {
+              <lucide-icon [name]="LogInIcon" class="btn-icon"></lucide-icon>
+              <span>Ingresar al Sistema</span>
+            }
+          </button>
+        </div>
+
+      </form>
+
+      <div class="lg-footer">
+        <p>Perfiles de acceso del personal:</p>
+        <div class="lg-roles">
+          <span class="lg-role-pill lg-role-pill--admin">Admin</span>
+          <span class="lg-role-pill lg-role-pill--mesero">Mesero</span>
+          <span class="lg-role-pill lg-role-pill--caja">Caja</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
