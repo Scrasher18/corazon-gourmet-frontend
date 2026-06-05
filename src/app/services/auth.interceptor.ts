@@ -2,9 +2,9 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { environment } from '../../environments/environment'; 
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem('token'); 
-  let clonedReq = req;
 
+  const token = localStorage.getItem('token_jwt'); 
+  let clonedReq = req;
 
   if (token) {
     clonedReq = req.clone({
@@ -19,7 +19,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const secureUrl = clonedReq.url.replace('http://localhost:8080', environment.apiUrl);
     clonedReq = clonedReq.clone({ url: secureUrl });
   }
-
 
   console.log(`🛡️ Interceptor redirigiendo petición a: ${clonedReq.url}`);
 
