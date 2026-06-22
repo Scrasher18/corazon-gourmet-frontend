@@ -2,17 +2,24 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { UsuarioService } from '../../services/usuario.service'; 
+import { LucideAngularModule, Search, Pencil, Ban, Trash2, UserPlus } from 'lucide-angular';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-usuario-gestion',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './usuario-gestion.html',
   styleUrl: './usuario-gestion.css'
 })
 export class UsuarioGestion implements OnInit {
   private usuarioService = inject(UsuarioService);
+
+  readonly SearchIcon = Search;
+  readonly PencilIcon = Pencil;
+  readonly BanIcon = Ban;
+  readonly Trash2Icon = Trash2;
+  readonly UserPlusIcon = UserPlus;
 
   listaUsuarios: any[] = [];
   txtBuscar: string = '';
@@ -40,17 +47,12 @@ export class UsuarioGestion implements OnInit {
       next: (data) => {
         this.listaUsuarios = data;
       },
-      error: (err) => console.error('Error al traer usuarios de la BD:', err)
+      error: (err) => console.error(err)
     });
   }
 
   get usuariosFiltrados(): any[] {
     return this.listaUsuarios.filter(usuario => {
- 
-      if (usuario.rol === 'ADMINISTRADOR') {
-        return false;
-      }
-      
       const nombreCompleto = `${usuario.nombre} ${usuario.apellido || ''}`.toLowerCase();
       const cumpleTexto = nombreCompleto.includes(this.txtBuscar.toLowerCase()) || 
                           usuario.dni.includes(this.txtBuscar);
@@ -90,7 +92,7 @@ export class UsuarioGestion implements OnInit {
               });
               this.cargarUsuarios();
             },
-            error: (err) => console.error('Error al cambiar estado:', err)
+            error: (err) => console.error(err)
           });
         }
       });
@@ -175,7 +177,7 @@ export class UsuarioGestion implements OnInit {
           this.cerrarModal();
         },
         error: (err) => {
-          console.error('Error al actualizar usuario:', err);
+          console.error(err);
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -185,7 +187,6 @@ export class UsuarioGestion implements OnInit {
         }
       });
     } else {
-  
       const primerBloqueDni = this.nuevoUsuario.dni.substring(0, 4);
       const contrasennaGenerada = `CG@${primerBloqueDni}`;
       this.nuevoUsuario.password = contrasennaGenerada;
@@ -203,7 +204,7 @@ export class UsuarioGestion implements OnInit {
           this.cerrarModal();
         },
         error: (err) => {
-          console.error('Error al registrar usuario:', err);
+          console.error(err);
           Swal.fire({
             icon: 'error',
             title: 'Error de registro',
@@ -212,6 +213,22 @@ export class UsuarioGestion implements OnInit {
           });
         }
       });
+    }
+  }
+
+  obtenerIconoRol(rol: string): string {
+    switch (rol) {
+      case 'ADMINISTRADOR': return 'assets/icons/admin.png';
+      case 'CAJA': return 'assets/icons/cajero.png';
+      default: return 'assets/icons/mesero.png';
+    }
+  }
+
+  obtenerClaseRol(rol: string): string {
+    switch (rol) {
+      case 'ADMINISTRADOR': return 'bg-[#FDFBF9] border border-purple-200 text-purple-700';
+      case 'CAJA': return 'bg-[#FDFBF9] border border-amber-200 text-amber-700';
+      default: return 'bg-[#FDFBF9] border border-blue-200 text-blue-700';
     }
   }
 }

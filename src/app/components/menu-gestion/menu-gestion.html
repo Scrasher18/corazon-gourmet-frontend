@@ -1,18 +1,24 @@
-<div class="gestion-container">
-  <div class="modulo-header">
-    <div class="header-info">
-      <h2>Gestión del Menú y Platos</h2>
-      <p>Administra la carta del restaurante, precios, categorías y disponibilidad en tiempo real.</p>
+<div class="p-4 md:p-6 bg-slate-50 min-h-screen">
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-y-4">
+    <div>
+      <h2 class="text-xl md:text-2xl font-black text-[#4A3525]">Gestión del Menú y Platos</h2>
+      <p class="text-xs md:text-sm text-[#A39183]">Administra la carta, precios, categorías y disponibilidad.</p>
     </div>
-    <button (click)="abrirModal()" class="btn-primary">
-      <span class="icon-add">+</span> Nuevo Plato
+    <button (click)="abrirModal()" class="bg-[#4A3525] hover:bg-[#6D533D] text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto">
+      <lucide-icon [img]="PlusIcon" class="w-5 h-5"></lucide-icon>
+      Nuevo Plato
     </button>
   </div>
 
-  <div class="filter-bar">
-    <input type="text" placeholder="Buscar por nombre de plato..." class="search-input" [(ngModel)]="txtBuscar" />
+  <div class="mb-6 flex flex-col md:flex-row gap-4">
+    <div class="relative w-full md:w-96 group">
+      <lucide-icon [img]="SearchIcon" class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-[#A39183] group-focus-within:text-[#D96C6B] transition-colors pointer-events-none"></lucide-icon>
+      <input type="text" placeholder="Buscar por nombre de plato..." 
+             class="w-full py-3 pr-4 pl-14 rounded-xl border border-[#E3D5CA] focus:border-[#D96C6B] focus:ring-4 focus:ring-[#D96C6B]/10 outline-none transition-all text-[#4A3525] font-medium placeholder:text-[#A39183]/70 text-sm md:text-base" 
+             [(ngModel)]="txtBuscar" />
+    </div>
     
-    <select class="filter-select" [(ngModel)]="categoriaSeleccionada">
+    <select class="w-full md:w-64 py-3 px-4 rounded-xl border border-[#E3D5CA] focus:border-[#D96C6B] focus:ring-4 focus:ring-[#D96C6B]/10 outline-none transition-all text-[#4A3525] font-medium bg-white text-sm md:text-base cursor-pointer" [(ngModel)]="categoriaSeleccionada">
       <option value="">Todas las Categorías</option>
       <option value="ENTRADA">Entradas</option>
       <option value="PLATO_FONDO">Platos de Fondo</option>
@@ -23,56 +29,69 @@
     </select>
   </div>
 
-  <div class="table-responsive">
-    <table class="data-table">
-      <thead>
+  <div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-[#E3D5CA]">
+    <table class="w-full text-left min-w-[700px]">
+      <thead class="bg-[#FDFBF9] border-b border-[#E3D5CA]">
         <tr>
-          <th>ID</th>
-          <th>Nombre del Plato / Bebida</th>
-          <th>Categoría</th>
-          <th>Precio (S/)</th>
-          <th>Disponibilidad</th>
-          <th class="text-center">Acciones</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Nombre del Plato / Bebida</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Categoría</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Precio (S/)</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Disponibilidad</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase text-center whitespace-nowrap">Acciones</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="divide-y divide-[#E3D5CA]/50">
         @for (plato of menusFiltrados; track plato.id) {
-          <tr>
-            <td><strong style="color: #64748b;">#{{ plato.id }}</strong></td>
-            <td><strong>{{ plato.nombreItem }}</strong></td>
-            <td>
-              <span class="badge badge-categoria">
-                {{ plato.categoria }}
+          <tr class="hover:bg-[#FDFBF9] transition-colors group">
+            <td class="p-3 md:p-4 font-black text-[#4A3525] text-sm md:text-base whitespace-nowrap">{{ plato.nombreItem }}</td>
+            <td class="p-3 md:p-4">
+              <span class="px-2.5 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-wider whitespace-nowrap"
+                    [ngClass]="{
+                      'bg-green-100 text-green-700 border border-green-200': plato.categoria === 'ENTRADA',
+                      'bg-orange-100 text-orange-700 border border-orange-200': plato.categoria === 'PLATO_FONDO',
+                      'bg-purple-100 text-purple-700 border border-purple-200': plato.categoria === 'PLATO_ESPECIAL',
+                      'bg-blue-100 text-blue-700 border border-blue-200': plato.categoria === 'BEBIDA' || plato.categoria === 'BEBIDA_EXTRA',
+                      'bg-pink-100 text-pink-700 border border-pink-200': plato.categoria === 'POSTRE_ADICIONAL'
+                    }">
+                {{ plato.categoria.replace('_', ' ') }}
               </span>
             </td>
-            <td>
-              <strong>
-                @if (plato.categoria === 'ENTRADA' || plato.categoria === 'BEBIDA') {
-                  <span style="color: #10b981;">Gratis (Menú)</span>
-                } @else {
-                  S/ {{ plato.precioNormal | number:'1.2-2' }}
-                }
-              </strong>
+            <td class="p-3 md:p-4 text-sm md:text-base whitespace-nowrap">
+              @if (plato.categoria === 'ENTRADA' || plato.categoria === 'BEBIDA') {
+                <span class="font-black text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">Gratis (Menú)</span>
+              } @else {
+                <span class="font-black text-[#4A3525]">S/ {{ plato.precioNormal | number:'1.2-2' }}</span>
+              }
             </td>
-            <td>
-              <span class="badge" 
-                    [class.badge-active]="plato.stockDisponible !== 0" 
-                    [class.badge-inactive]="plato.stockDisponible === 0">
+            <td class="p-3 md:p-4">
+              <span class="px-2.5 md:px-3 py-0.5 md:py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-wider flex items-center gap-1 w-max whitespace-nowrap"
+                    [ngClass]="plato.stockDisponible !== 0 ? 'bg-[#FDFBF9] border border-emerald-200 text-emerald-700' : 'bg-[#FDFBF9] border border-rose-200 text-rose-700'">
+                <span class="w-1.5 h-1.5 rounded-full shrink-0" [ngClass]="plato.stockDisponible !== 0 ? 'bg-emerald-500' : 'bg-rose-500'"></span>
                 {{ plato.stockDisponible !== 0 ? 'Disponible' : 'Agotado' }}
               </span>
             </td>
-            <td class="text-center">
-              <div class="actions-gap">
-                <button (click)="abrirModalEditar(plato)" class="btn-action btn-edit" title="Editar Plato">✏️</button>
-                <button (click)="toggleDisponibilidad(plato)" class="btn-action btn-status" title="Cambiar Disponibilidad">🔄</button>
-                <button (click)="eliminarPlato(plato)" class="btn-action btn-delete" title="Eliminar de la Carta" style="color: #ef4444;">🗑️</button>
-              </div>
+            <td class="p-3 md:p-4 flex justify-center gap-1 md:gap-1 opacity-100 transition-opacity whitespace-nowrap">
+              <button (click)="abrirModalEditar(plato)" class="p-1.5 md:p-2 text-[#A39183] hover:text-[#4A3525] hover:bg-white border border-transparent hover:border-[#E3D5CA] shadow-sm hover:shadow rounded-xl transition-all" title="Editar Plato">
+                <lucide-icon [img]="PencilIcon" class="w-4 h-4 md:w-4 md:h-4"></lucide-icon>
+              </button>
+              <button (click)="toggleDisponibilidad(plato)" class="p-1.5 md:p-2 text-[#A39183] hover:text-[#D96C6B] hover:bg-white border border-transparent hover:border-[#E3D5CA] shadow-sm hover:shadow rounded-xl transition-all" [title]="plato.stockDisponible !== 0 ? 'Marcar como Agotado' : 'Marcar como Disponible'">
+                <lucide-icon [img]="PowerIcon" class="w-4 h-4 md:w-4 md:h-4"></lucide-icon>
+              </button>
+              <button (click)="eliminarPlato(plato)" class="p-1.5 md:p-2 text-[#A39183] hover:text-red-600 hover:bg-white border border-transparent hover:border-red-200 shadow-sm hover:shadow rounded-xl transition-all" title="Eliminar de la Carta">
+                <lucide-icon [img]="Trash2Icon" class="w-4 h-4 md:w-4 md:h-4"></lucide-icon>
+              </button>
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="text-center" style="color: #7e8299; padding: 30px;">
-              No se encontraron platos que coincidan con los filtros.
+            <td colspan="5" class="py-16 text-center">
+              <div class="flex flex-col items-center justify-center">
+                <div class="w-16 h-16 bg-[#FDFBF9] border-2 border-[#E3D5CA] rounded-2xl flex items-center justify-center mb-4 text-[#A39183]">
+                  <lucide-icon [img]="SearchIcon" class="w-8 h-8 opacity-50"></lucide-icon>
+                </div>
+                <h4 class="text-[#4A3525] font-black mb-1">Sin resultados</h4>
+                <p class="text-sm text-[#A39183]">No se encontraron platos que coincidan con los filtros.</p>
+              </div>
             </td>
           </tr>
         }
@@ -82,63 +101,51 @@
 </div>
 
 @if (mostrarModal) {
-  <div class="modal-overlay">
-    <div class="modal-content">
-      <h3>{{ esEdicion ? 'Modificar Elemento del Menú' : 'Agregar Nuevo Elemento a la Carta' }}</h3>
-      <p class="modal-subtitle">Configure el producto de forma individual. El sistema gestionar los combos automáticamente.</p>
+  <div class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-3xl p-5 md:p-8 w-full max-w-md shadow-2xl border border-[#E3D5CA] animate-pop-in overflow-y-auto max-h-[90vh]">
+      <h3 class="text-xl md:text-2xl font-black text-[#4A3525] mb-1 tracking-tight">{{ esEdicion ? 'Modificar Elemento' : 'Nuevo Elemento' }}</h3>
+      <p class="text-xs md:text-sm text-[#A39183] mb-8 font-medium">Configure el producto individualmente. El sistema gestionará los combos automáticamente.</p>
       
-      <div class="form-group">
-        <label>Nombre del Elemento</label>
-        <input 
-          type="text" 
-          [(ngModel)]="nuevoPlato.nombreItem"
-          placeholder="Ej. Lomo Saltado, Papa a la Huancaína, Chicha Morada" 
-        />
-      </div>
-
-      <div class="form-group">
-        <label>Categoría del Elemento</label>
-        <select [(ngModel)]="nuevoPlato.categoria" (change)="verificarCategoriaPrecio()">
-          <option value="PLATO_FONDO">PLATO_FONDO</option>
-          <option value="PLATO_ESPECIAL">PLATO_ESPECIAL</option>
-          <option value="ENTRADA">ENTRADA</option>
-          <option value="BEBIDA">BEBIDA</option>
-          <option value="BEBIDA_EXTRA">BEBIDA_EXTRA</option>
-          <option value="POSTRE_ADICIONAL">POSTRE_ADICIONAL</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Precio Normal (S/)</label>
-        <input 
-          type="number" 
-          [(ngModel)]="nuevoPlato.precioNormal"
-          placeholder="0.00"
-          step="0.10"
-          [disabled]="nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA'"
-        />
-      </div>
-
-      <div class="form-group">
-        <label>Precio CONADIS (S/)</label>
-        <input 
-          type="number" 
-          [(ngModel)]="nuevoPlato.precioConadis"
-          placeholder="0.00"
-          step="0.10"
-          [disabled]="nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA'"
-        />
-      </div>
-
-      @if (nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA') {
-        <div class="alerta-gratis">
-          ✨ Al ser una Entrada o Bebida común, se integra al combo del menú con un valor base de S/ 0.00.
+      <div class="space-y-5">
+        <div class="space-y-1.5">
+          <label class="text-[10px] md:text-[11px] font-black text-[#A39183] uppercase tracking-wider pl-1">Nombre del Elemento</label>
+          <input type="text" class="w-full p-3.5 rounded-xl border border-[#E3D5CA] focus:border-[#4A3525] focus:ring-4 focus:ring-[#4A3525]/10 outline-none transition-all font-bold text-[#4A3525] bg-[#FDFBF9] focus:bg-white text-sm md:text-base" [(ngModel)]="nuevoPlato.nombreItem" placeholder="Ej. Lomo Saltado, Chicha Morada" />
         </div>
-      }
 
-      <div class="modal-actions">
-        <button (click)="cerrarModal()" class="btn-secondary">Cancelar</button>
-        <button (click)="guardarPlato()" [disabled]="!nuevoPlato.nombreItem" class="btn-save">
+        <div class="space-y-1.5">
+          <label class="text-[10px] md:text-[11px] font-black text-[#A39183] uppercase tracking-wider pl-1">Categoría del Elemento</label>
+          <select class="w-full p-3.5 rounded-xl border border-[#E3D5CA] focus:border-[#4A3525] focus:ring-4 focus:ring-[#4A3525]/10 outline-none transition-all font-bold text-[#4A3525] bg-[#FDFBF9] focus:bg-white cursor-pointer text-sm md:text-base" [(ngModel)]="nuevoPlato.categoria" (change)="verificarCategoriaPrecio()">
+            <option value="PLATO_FONDO">Plato de Fondo</option>
+            <option value="PLATO_ESPECIAL">Plato Especial</option>
+            <option value="ENTRADA">Entrada</option>
+            <option value="BEBIDA">Bebida</option>
+            <option value="BEBIDA_EXTRA">Bebida Extra</option>
+            <option value="POSTRE_ADICIONAL">Postre Adicional</option>
+          </select>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="text-[10px] md:text-[11px] font-black text-[#A39183] uppercase tracking-wider pl-1">Precio Normal (S/)</label>
+            <input type="number" class="w-full p-3.5 rounded-xl border border-[#E3D5CA] focus:border-[#4A3525] focus:ring-4 focus:ring-[#4A3525]/10 outline-none transition-all font-bold text-[#4A3525] bg-[#FDFBF9] focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed text-sm md:text-base" [(ngModel)]="nuevoPlato.precioNormal" placeholder="0.00" step="0.10" [disabled]="nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA'" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-[10px] md:text-[11px] font-black text-[#A39183] uppercase tracking-wider pl-1">Precio CONADIS (S/)</label>
+            <input type="number" class="w-full p-3.5 rounded-xl border border-[#E3D5CA] focus:border-[#4A3525] focus:ring-4 focus:ring-[#4A3525]/10 outline-none transition-all font-bold text-[#4A3525] bg-[#FDFBF9] focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed text-sm md:text-base" [(ngModel)]="nuevoPlato.precioConadis" placeholder="0.00" step="0.10" [disabled]="nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA'" />
+          </div>
+        </div>
+
+        @if (nuevoPlato.categoria === 'ENTRADA' || nuevoPlato.categoria === 'BEBIDA') {
+          <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-4 text-xs font-medium leading-relaxed">
+            <strong class="font-black">✨ Nota:</strong> Al ser una Entrada o Bebida común, se integra al combo del menú con un valor base de S/ 0.00.
+          </div>
+        }
+      </div>
+
+      <div class="flex flex-col-reverse sm:flex-row gap-3 md:gap-4 mt-8 md:mt-10">
+        <button (click)="cerrarModal()" class="w-full sm:w-1/3 py-3 rounded-xl font-bold text-[#A39183] hover:text-[#4A3525] hover:bg-[#FDFBF9] border border-transparent hover:border-[#E3D5CA] transition-all text-sm md:text-base">Cancelar</button>
+        <button (click)="guardarPlato()" [disabled]="!nuevoPlato.nombreItem" class="w-full sm:w-2/3 py-3 rounded-xl font-bold bg-[#D96C6B] text-white hover:bg-[#c05d5c] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 transition-all shadow-lg shadow-[#D96C6B]/30 flex items-center justify-center gap-2 text-sm md:text-base">
           {{ esEdicion ? 'Guardar Cambios' : 'Registrar Componente' }}
         </button>
       </div>

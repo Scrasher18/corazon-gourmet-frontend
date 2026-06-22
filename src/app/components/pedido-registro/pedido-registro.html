@@ -1,135 +1,226 @@
-<div class="mobile-order-container">
-  
-  <div class="setup-section">
-    <div class="counter-box">
-      <span class="label">N° Mesa</span>
-      <div class="counter-controls">
-        <button (click)="ajustarMesa(-1)" type="button" class="btn-step">—</button>
-        <input 
-          type="number" 
-          [(ngModel)]="numMesa" 
-          (change)="validarMesa()" 
-          class="numeric-input" 
-          min="1" 
-        />
-        <button (click)="ajustarMesa(1)" type="button" class="btn-step">+</button>
+<div class="max-w-4xl mx-auto p-3 md:p-5 space-y-5">
+
+  <div class="bg-white border border-[#E3D5CA] rounded-xl p-3 flex items-center gap-3 shadow-sm">
+    <div class="w-12 h-12 rounded-full overflow-hidden bg-[#FDFBF9] border-2 border-[#D96C6B] flex items-center justify-center p-1.5 shrink-0">
+      <img src="/assets/icons/mesero.png" alt="Mesero" class="w-full h-full object-contain">
+    </div>
+    <div class="flex-1">
+      <p class="text-[10px] font-black text-[#D96C6B] uppercase tracking-widest">Mesero en Turno</p>
+      <p class="text-sm font-black text-[#4A3525] leading-tight">DNI: {{ usuarioDni }}</p>
+    </div>
+    <span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Online</span>
+  </div>
+
+  @if (ordenesActivas.length > 0) {
+    <div class="bg-white border border-[#E3D5CA] rounded-xl p-4 shadow-sm">
+      <h3 class="text-xs font-black text-[#A39183] uppercase tracking-widest mb-3 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-[#D96C6B] animate-pulse"></span> Mesas Activas en Salón
+      </h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        @for (orden of ordenesActivas; track orden.mesa) {
+          <div class="border border-[#E3D5CA] rounded-xl p-3 flex flex-col items-center bg-[#FDFBF9] hover:border-[#D96C6B] transition-colors relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-[#D96C6B] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform"></div>
+            <span class="text-lg font-black text-[#4A3525]">Mesa {{ orden.mesa }}</span>
+            <span class="text-xs font-black text-[#D96C6B] mt-1 bg-white px-2 py-1 rounded-md border border-[#E3D5CA]">S/ {{ orden.totalPagar | number:'1.2-2' }}</span>
+            <span class="text-[10px] font-bold text-[#A39183] mt-2 bg-slate-100 px-2 py-0.5 rounded">{{ orden.totalPersonas }} comensales</span>
+            <button (click)="editarOrden(orden)" class="mt-3 w-full py-1.5 px-2 bg-white border border-[#D96C6B] text-[#D96C6B] text-[11px] font-black rounded-lg hover:bg-[#D96C6B] hover:text-white transition-all active:scale-95">
+              {{ mesaEnEdicion === orden.mesa ? 'Editando...' : 'Editar Orden' }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="bg-white border border-[#E3D5CA] rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm">
+      <label class="text-[10px] font-black text-[#A39183] uppercase tracking-widest mb-2">Número de Mesa</label>
+      <div class="flex items-center gap-3 bg-[#FDFBF9] p-1.5 rounded-xl border border-[#E3D5CA]">
+        <button (click)="ajustarMesa(-1)" class="w-10 h-10 rounded-lg border border-[#E3D5CA] font-black text-xl text-[#4A3525] bg-white hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] transition-all active:scale-95">-</button>
+        <input type="number" [(ngModel)]="numMesa" (change)="alCambiarMesaManualmente()" class="w-12 text-center font-black text-xl text-[#4A3525] focus:outline-none bg-transparent appearance-none">
+        <button (click)="ajustarMesa(1)" class="w-10 h-10 rounded-lg border border-[#E3D5CA] font-black text-xl text-[#4A3525] bg-white hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] transition-all active:scale-95">+</button>
       </div>
     </div>
 
-    <div class="counter-box">
-      <span class="label">Total Clientes</span>
-      <div class="counter-controls">
-        <button (click)="ajustarComensales(-1)" type="button" class="btn-step">—</button>
-        <span class="people-value">{{ totalComensales }}</span>
-        <button (click)="ajustarComensales(1)" type="button" class="btn-step">+</button>
+    <div class="bg-white border border-[#E3D5CA] rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm">
+      <label class="text-[10px] font-black text-[#A39183] uppercase tracking-widest mb-2">Total de Clientes</label>
+      <div class="flex items-center gap-3 bg-[#FDFBF9] p-1.5 rounded-xl border border-[#E3D5CA]">
+        <button (click)="ajustarComensales(-1)" [disabled]="mesaOcupadaError" [ngClass]="mesaOcupadaError ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] active:scale-95'" class="w-10 h-10 rounded-lg border border-[#E3D5CA] font-black text-xl text-[#4A3525] bg-white transition-all">-</button>
+        <span class="w-12 text-center font-black text-xl text-[#4A3525]" [class.opacity-50]="mesaOcupadaError">{{ totalComensales }}</span>
+        <button (click)="ajustarComensales(1)" [disabled]="mesaOcupadaError" [ngClass]="mesaOcupadaError ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] active:scale-95'" class="w-10 h-10 rounded-lg border border-[#E3D5CA] font-black text-xl text-[#4A3525] bg-white transition-all">+</button>
       </div>
     </div>
   </div>
 
-  <div class="tarifa-toggle-box" style="margin: 10px 0; padding: 10px; background: #f8fafc; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-    <span style="font-size: 14px; font-weight: 600; color: #334155;">♿ Aplicar Tarifa Especial (CONADIS)</span>
-    <input type="checkbox" [(ngModel)]="isConadis" (change)="cambiarTarifaGlobal()" style="width: 20px; height: 20px;" />
-  </div>
+  @if (mesaOcupadaError) {
+    <div class="bg-[#FFF5F5] border border-[#D96C6B] rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-sm animate-fade-in">
+      <div class="w-16 h-16 bg-white border-2 border-[#D96C6B] rounded-full flex items-center justify-center mb-4 shadow-sm p-3">
+        <img src="/assets/icons/advertencia.png" alt="Advertencia" class="w-full h-full object-contain">
+      </div>
+      <h3 class="text-lg font-black text-[#D96C6B] mb-2 tracking-tight">Mesa Ocupada</h3>
+      <p class="text-sm font-bold text-[#8C7667] max-w-sm leading-relaxed">
+        La <span class="text-[#D96C6B] font-black">Mesa {{ numMesa }}</span> ya tiene un pedido activo. <br><br>
+        <span class="font-black text-[#4A3525] bg-white px-3 py-1.5 rounded-lg border border-[#E3D5CA] inline-block">Edítala desde "Mesas Activas"</span>
+      </p>
+    </div>
+  } @else {
 
-  <div class="guests-wrapper">
-    @for (comensal of comensales; track comensal.id; let i = $index) {
-      <div class="customer-card" [class.has-order-disabled]="comensal.tipoServicio === 'NINGUNO'">
-        
-        <div class="customer-meta">
-          <span class="customer-badge">Cliente #{{ comensal.id }}</span>
-          @if (comensal.precio > 0) {
-            <span class="customer-price">S/ {{ comensal.precio.toFixed(2) }}</span>
-          }
+    @for (comensal of comensales; track comensal.id) {
+      <div class="bg-white border border-[#E3D5CA] rounded-xl p-4 md:p-5 shadow-sm space-y-4 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-1.5 h-full bg-[#A3B196]"></div>
+        <div class="flex items-center justify-between border-b border-[#E3D5CA] pb-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden bg-[#FDFBF9] border border-[#E3D5CA] flex items-center justify-center p-1.5 shrink-0">
+              <img src="/assets/icons/cliente.png" alt="Cliente" class="w-full h-full object-contain">
+            </div>
+            <div class="flex flex-col">
+              <span class="font-black text-base text-[#4A3525] leading-tight">Cliente #{{ comensal.id }}</span>
+            </div>
+          </div>
+          <label class="flex items-center gap-2 cursor-pointer select-none bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+            <input type="checkbox" [(ngModel)]="comensal.isConadis" (change)="cambiarTarifaIndividual(comensal)" class="w-4 h-4 rounded text-[#D96C6B] focus:ring-[#D96C6B] border-gray-300">
+            <span class="text-[10px] font-black text-[#D96C6B] uppercase tracking-widest">Tarifa Conadis</span>
+          </label>
         </div>
 
-        <div class="tab-selector">
-          <button 
-            [class.active-tab]="comensal.tipoServicio === 'MENU'" 
-            (click)="seleccionarServicio(i, 'MENU')" 
-            type="button">⚡ Menú del Día
-          </button>
-          <button 
-            [class.active-tab]="comensal.tipoServicio === 'CARTA'" 
-            (click)="seleccionarServicio(i, 'CARTA')" 
-            type="button">🍽️ A la Carta
-          </button>
-          <button 
-            [class.active-tab]="comensal.tipoServicio === 'NINGUNO'" 
-            (click)="seleccionarServicio(i, 'NINGUNO')" 
-            type="button">Pasar
-          </button>
+        <div class="grid grid-cols-3 gap-3 bg-[#FDFBF9] p-1.5 rounded-xl border border-[#E3D5CA]">
+          <button (click)="seleccionarServicio(comensal, 'MENU')" [ngClass]="comensal.tipoServicio === 'MENU' ? 'bg-[#D96C6B] text-white shadow-sm border-[#D96C6B]' : 'bg-white text-[#8C7667] border-transparent hover:border-[#D96C6B]'" class="py-2.5 rounded-lg text-sm font-black border transition-all active:scale-95">Menú</button>
+          <button (click)="seleccionarServicio(comensal, 'CARTA')" [ngClass]="comensal.tipoServicio === 'CARTA' ? 'bg-[#D96C6B] text-white shadow-sm border-[#D96C6B]' : 'bg-white text-[#8C7667] border-transparent hover:border-[#D96C6B]'" class="py-2.5 rounded-lg text-sm font-black border transition-all active:scale-95">Carta</button>
+          <button (click)="seleccionarServicio(comensal, 'NINGUNO')" [ngClass]="comensal.tipoServicio === 'NINGUNO' ? 'bg-slate-700 text-white shadow-sm border-slate-700' : 'bg-white text-[#8C7667] border-transparent hover:border-slate-400'" class="py-2.5 rounded-lg text-sm font-black border transition-all active:scale-95">Pasar</button>
         </div>
 
         @if (comensal.tipoServicio === 'MENU') {
-          <div class="menu-list-container">
-            <span class="section-subtitle">1. Selecciona Segundo:</span>
-            @for (plato of opcionesMenu; track plato.id) {
-              <div 
-                class="menu-item-row" 
-                [class.row-selected]="comensal.platoSeleccionado === plato.nombreItem"
-                (click)="seleccionarPlato(i, plato)">
-                <div class="item-info">
-                  <span class="item-name">{{ plato.nombreItem }}</span>
-                </div>
-                <span class="item-price">S/ {{ ((isConadis ? plato.precioConadis : plato.precioNormal) || 0).toFixed(2) }}</span>
+          <div class="space-y-4 pt-1">
+            <div>
+              <label class="text-[10px] font-black text-[#A39183] uppercase tracking-widest mb-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#A3B196]"></span> Entrada</label>
+              <div class="flex flex-wrap gap-2">
+                @for (entrada of opcionesEntradas; track entrada.nombreItem) {
+                  <button (click)="seleccionarEntrada(comensal, entrada.nombreItem)" [ngClass]="comensal.entradaSeleccionada === entrada.nombreItem ? 'border-[#D96C6B] bg-[#D96C6B] text-white shadow-sm' : 'border-[#E3D5CA] text-[#4A3525] bg-white hover:border-[#D96C6B] hover:text-[#D96C6B]'" class="border text-xs font-black px-4 py-2 rounded-lg transition-all active:scale-95">
+                    {{ entrada.nombreItem }}
+                  </button>
+                }
               </div>
-            }
-
-            <span class="section-subtitle mt-3">2. Selecciona Entrada:</span>
-            <div class="sub-options-grid">
-              @for (ent of opcionesEntradas; track ent.id) {
-                <button 
-                  type="button" 
-                  [class.sub-picked]="comensal.entradaSeleccionada === ent.nombreItem"
-                  (click)="seleccionarEntrada(i, ent.nombreItem)">
-                  {{ ent.nombreItem }}
-                </button>
-              }
             </div>
 
-            <span class="section-subtitle mt-3">3. Selecciona Bebida:</span>
-            <div class="sub-options-grid">
-              @for (beb of opcionesBebidas; track beb.id) {
-                <button 
-                  type="button" 
-                  [class.sub-picked]="comensal.bebidaSeleccionada === beb.nombreItem"
-                  (click)="seleccionarBebida(i, beb.nombreItem)">
-                  {{ beb.nombreItem }}
-                </button>
-              }
+            <div>
+              <label class="text-[10px] font-black text-[#A39183] uppercase tracking-widest mb-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#A3B196]"></span> Segundo (Plato de Fondo)</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                @for (plato of opcionesMenu; track plato.nombreItem) {
+                  <button (click)="seleccionarPlato(comensal, plato)" [ngClass]="comensal.platoSeleccionado === plato.nombreItem ? 'border-[#D96C6B] bg-[#FFF5F5] text-[#D96C6B] ring-1 ring-[#D96C6B]' : 'border-[#E3D5CA] text-[#4A3525] bg-white hover:border-[#D96C6B] hover:bg-slate-50'" class="border text-left text-sm font-bold p-3 rounded-xl transition-all flex justify-between items-center group active:scale-95">
+                    <span class="group-hover:text-[#D96C6B] transition-colors pr-2">{{ plato.nombreItem }}</span>
+                    <span [ngClass]="comensal.platoSeleccionado === plato.nombreItem ? 'bg-[#D96C6B] border-transparent text-white' : 'bg-white border-[#E3D5CA] text-[#D96C6B] group-hover:border-[#D96C6B]'" class="font-black px-2 py-1 rounded border text-[11px] transition-colors whitespace-nowrap">S/ {{ (comensal.isConadis ? plato.precioConadis : plato.precioNormal) | number:'1.2-2' }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div>
+              <label class="text-[10px] font-black text-[#A39183] uppercase tracking-widest mb-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#A3B196]"></span> Bebida</label>
+              <div class="flex flex-wrap gap-2">
+                @for (bebida of opcionesBebidas; track bebida.nombreItem) {
+                  <button (click)="seleccionarBebida(comensal, bebida.nombreItem)" [ngClass]="comensal.bebidaSeleccionada === bebida.nombreItem ? 'border-[#D96C6B] bg-[#D96C6B] text-white shadow-sm' : 'border-[#E3D5CA] text-[#4A3525] bg-white hover:border-[#D96C6B] hover:text-[#D96C6B]'" class="border text-xs font-black px-4 py-2 rounded-lg transition-all active:scale-95">
+                    {{ bebida.nombreItem }}
+                  </button>
+                }
+              </div>
             </div>
           </div>
         }
 
         @if (comensal.tipoServicio === 'CARTA') {
-          <div class="menu-list-container">
-            <span class="section-subtitle">1. Selecciona Plato a la Carta:</span>
-            @for (plato of opcionesCarta; track plato.id) {
-              <div 
-                class="menu-item-row" 
-                [class.row-selected]="comensal.platoSeleccionado === plato.nombreItem"
-                (click)="seleccionarPlato(i, plato)">
-                <div class="item-info">
-                  <span class="item-name">{{ plato.nombreItem }}</span>
-                </div>
-                <span class="item-price">S/ {{ ((isConadis ? plato.precioConadis : plato.precioNormal) || 0).toFixed(2) }}</span>
+          <div class="space-y-4 pt-1">
+            <div>
+              <label class="text-[10px] font-black text-[#A39183] uppercase tracking-widest mb-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#A3B196]"></span> Plato a la Carta</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                @for (plato of opcionesCarta; track plato.nombreItem) {
+                  <button (click)="seleccionarPlato(comensal, plato)" [ngClass]="comensal.platoSeleccionado === plato.nombreItem ? 'border-[#D96C6B] bg-[#FFF5F5] text-[#D96C6B] ring-1 ring-[#D96C6B]' : 'border-[#E3D5CA] text-[#4A3525] bg-white hover:border-[#D96C6B] hover:bg-slate-50'" class="border text-left text-sm font-bold p-3 rounded-xl transition-all flex justify-between items-center group active:scale-95">
+                    <span class="group-hover:text-[#D96C6B] transition-colors pr-2">{{ plato.nombreItem }}</span>
+                    <span [ngClass]="comensal.platoSeleccionado === plato.nombreItem ? 'bg-[#D96C6B] border-transparent text-white' : 'bg-white border-[#E3D5CA] text-[#D96C6B] group-hover:border-[#D96C6B]'" class="font-black px-2 py-1 rounded border text-[11px] transition-colors whitespace-nowrap">S/ {{ (comensal.isConadis ? plato.precioConadis : plato.precioNormal) | number:'1.2-2' }}</span>
+                  </button>
+                }
               </div>
-            }
+            </div>
+
+            <div>
+              <label class="text-[10px] font-black text-[#A39183] uppercase tracking-widest mb-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#A3B196]"></span> Bebida Opcional</label>
+              <div class="flex flex-wrap gap-2">
+                @for (bebida of opcionesBebidas; track bebida.nombreItem) {
+                  <button (click)="seleccionarBebida(comensal, bebida.nombreItem)" [ngClass]="comensal.bebidaSeleccionada === bebida.nombreItem ? 'border-[#D96C6B] bg-[#D96C6B] text-white shadow-sm' : 'border-[#E3D5CA] text-[#4A3525] bg-white hover:border-[#D96C6B] hover:text-[#D96C6B]'" class="border text-xs font-black px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 active:scale-95 group">
+                    <span>{{ bebida.nombreItem }}</span>
+                    <span [ngClass]="comensal.bebidaSeleccionada === bebida.nombreItem ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'" class="font-black text-[10px] px-1.5 py-0.5 rounded border border-transparent group-hover:border-slate-300">(+S/ {{ (comensal.isConadis ? bebida.precioConadis : bebida.precioNormal) | number:'1.2-2' }})</span>
+                  </button>
+                }
+              </div>
+            </div>
           </div>
         }
-
       </div>
     }
-  </div>
 
-  <footer class="compact-sticky-bar">
-    <div class="bar-total-section">
-      <span class="bar-total-label">Subtotal Mesa {{ numMesa }}</span>
-      <span class="bar-total-amount">S/ {{ calcularTotal().toFixed(2) }}</span>
+    <div class="bg-white border border-[#E3D5CA] rounded-xl p-5 shadow-sm space-y-5">
+      <h3 class="text-sm font-black text-[#4A3525] uppercase tracking-widest border-b border-[#E3D5CA] pb-3 flex items-center gap-2">
+        <span class="text-lg">✨</span> Extras de la Mesa
+      </h3>
+      
+      <div class="space-y-3">
+        <label class="text-[10px] font-black text-[#A39183] bg-[#FDFBF9] px-3 py-1.5 rounded-md border border-[#E3D5CA] uppercase tracking-widest inline-flex items-center gap-2">
+          <img src="/assets/icons/postre.png" alt="Postres" class="w-4 h-4 object-contain"> Postres
+        </label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          @for (postre of postresConCantidad; track postre.item.nombreItem) {
+            <div class="flex items-center justify-between border border-[#E3D5CA] p-3 rounded-xl bg-white hover:border-[#A3B196] transition-colors">
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-[#4A3525]">{{ postre.item.nombreItem }}</span>
+                <span class="text-xs font-black text-[#D96C6B] mt-0.5">S/ {{ postre.item.precioNormal | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex items-center gap-3 bg-[#FDFBF9] p-1 rounded-lg border border-[#E3D5CA]">
+                <button (click)="ajustarCantidadExtra(postre, -1)" class="w-8 h-8 rounded-md border border-[#E3D5CA] font-black text-lg text-[#4A3525] bg-white hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] transition-all active:scale-95">-</button>
+                <span class="w-6 text-center font-black text-sm text-[#4A3525]">{{ postre.cantidad }}</span>
+                <button (click)="ajustarCantidadExtra(postre, 1)" class="w-8 h-8 rounded-md border border-[#E3D5CA] font-black text-lg text-[#4A3525] bg-white hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] transition-all active:scale-95">+</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="space-y-3 pt-3 border-t border-slate-50">
+        <label class="text-[10px] font-black text-[#A39183] bg-[#FDFBF9] px-3 py-1.5 rounded-md border border-[#E3D5CA] uppercase tracking-widest inline-flex items-center gap-2">
+          <img src="/assets/icons/bebida.png" alt="Bebidas" class="w-4 h-4 object-contain"> Bebidas Extra
+        </label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          @for (bebida of bebidasExtraConCantidad; track bebida.item.nombreItem) {
+            <div class="flex items-center justify-between border border-[#E3D5CA] p-3 rounded-xl bg-white hover:border-[#A3B196] transition-colors">
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-[#4A3525]">{{ bebida.item.nombreItem }}</span>
+                <span class="text-xs font-black text-[#D96C6B] mt-0.5">S/ {{ bebida.item.precioNormal | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex items-center gap-3 bg-[#FDFBF9] p-1 rounded-lg border border-[#E3D5CA]">
+                <button (click)="ajustarCantidadExtra(bebida, -1)" class="w-8 h-8 rounded-md border border-[#E3D5CA] font-black text-lg text-[#4A3525] bg-white hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] transition-all active:scale-95">-</button>
+                <span class="w-6 text-center font-black text-sm text-[#4A3525]">{{ bebida.cantidad }}</span>
+                <button (click)="ajustarCantidadExtra(bebida, 1)" class="w-8 h-8 rounded-md border border-[#E3D5CA] font-black text-lg text-[#4A3525] bg-white hover:bg-[#D96C6B] hover:text-white hover:border-[#D96C6B] transition-all active:scale-95">+</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
     </div>
-    <button (click)="guardarComanda()" class="btn-bar-action" type="button" [disabled]="calcularTotal() === 0">
-      Guardar e Ir a Otra Mesa 🔄
-    </button>
-  </footer>
 
+    <div class="bg-white border-t border-[#E3D5CA] p-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 left-0 right-0 shadow-[0_-5px_20px_-10px_rgba(0,0,0,0.1)] rounded-t-2xl z-20">
+      <div class="flex flex-col items-center sm:items-start bg-[#FDFBF9] px-5 py-2 rounded-xl border border-[#E3D5CA]">
+        <span class="text-[10px] font-black text-[#A39183] uppercase tracking-widest">Total Mesa {{ numMesa }}</span>
+        <span class="text-2xl sm:text-3xl font-black text-[#D96C6B] leading-none mt-1">S/ {{ calcularTotal() | number:'1.2-2' }}</span>
+      </div>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        @if (mesaEnEdicion) {
+          <button (click)="cancelarEdicion()" class="flex-1 sm:flex-none py-3 px-6 border border-[#E3D5CA] text-[#8C7667] text-sm font-black rounded-xl hover:bg-slate-100 hover:text-[#4A3525] transition-all active:scale-95">
+            Cancelar
+          </button>
+        }
+        <button (click)="guardarComanda()" class="flex-1 sm:flex-none py-3 px-8 text-sm font-black rounded-xl transition-all active:scale-95 bg-[#D96C6B] border border-[#D96C6B] text-white hover:bg-[#C25857] hover:border-[#C25857] shadow-md shadow-[#D96C6B]/20">
+          {{ mesaEnEdicion ? 'Actualizar Mesa' : 'Guardar Orden' }}
+        </button>
+      </div>
+    </div>
+
+  } 
 </div>

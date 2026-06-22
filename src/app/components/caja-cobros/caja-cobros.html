@@ -1,48 +1,86 @@
-<div class="min-h-screen bg-gray-100 p-8 text-gray-800 antialiased selection:bg-emerald-500 selection:text-white">
-  
-  <section class="mb-6 rounded-xl border border-gray-300 bg-white p-6 shadow-sm" aria-labelledby="salon-title">
-    <div class="mb-4 flex items-center justify-between border-b border-gray-200 pb-3">
-      <div class="flex items-center gap-2">
-        <span class="text-xl">🍽️</span>
-        <h3 id="salon-title" class="text-xl font-bold text-gray-900">Mesas Activas en Salón</h3>
+<div class="mb-8 p-4 sm:p-6 rounded-3xl border shadow-sm transition-all flex flex-col sm:flex-row items-center justify-between gap-4" 
+     [ngClass]="cajaAbierta ? 'bg-[#FDFBF9] border-[#A3B196]' : 'bg-[#FFF5F5] border-[#D96C6B]'">
+ 
+  <div class="flex items-center gap-4 w-full sm:w-auto">
+    <div class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center shadow-inner" 
+         [ngClass]="cajaAbierta ? 'bg-[#A3B196] text-white' : 'bg-[#D96C6B] text-white'">
+      <lucide-icon [img]="cajaAbierta ? UnlockIcon : LockIcon" class="w-6 h-6"></lucide-icon>
+    </div>
+    <div class="flex-1">
+      <h3 class="text-sm font-black uppercase tracking-widest" 
+          [ngClass]="cajaAbierta ? 'text-[#4D633C]' : 'text-[#A04544]'">
+        {{ cajaAbierta ? 'Turno Abierto' : 'Turno Cerrado' }}
+      </h3>
+      <p class="text-xs font-bold text-[#8C7667] mt-0.5 leading-tight">
+        {{ cajaAbierta ? 'Listo para procesar cobros.' : 'Abre la caja para poder cobrar pedidos.' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0 bg-white/40 sm:bg-transparent p-3 sm:p-0 rounded-xl">
+    @if (cajaAbierta) {
+      <div class="text-center sm:text-right w-full sm:w-auto">
+        <p class="text-[10px] font-black text-[#8C7667] uppercase tracking-widest">Ventas del Turno</p>
+        <p class="text-xl sm:text-lg font-black text-[#4A3525]">S/ {{ ventasDelDiaSistema | number:'1.2-2' }}</p>
       </div>
-      <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-600 border border-red-200">
+      <button (click)="cerrarCaja()" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#D96C6B] text-white text-sm font-black rounded-xl hover:bg-[#C25857] transition-all active:scale-95 shadow-md">
+        <lucide-icon [img]="LockIcon" class="w-4 h-4"></lucide-icon>
+        Cerrar Caja
+      </button>
+    } @else {
+      <button (click)="abrirCaja()" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#4A3525] text-white text-sm font-black rounded-xl hover:bg-[#3D2616] transition-all active:scale-95 shadow-md">
+        <lucide-icon [img]="UnlockIcon" class="w-4 h-4"></lucide-icon>
+        Abrir Caja
+      </button>
+    }
+  </div>
+</div>
+
+<div class="min-h-screen bg-gray-50/50 text-gray-800 antialiased selection:bg-emerald-500 selection:text-white pb-10">
+  
+  <section class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-sm">
+    <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 pb-4 gap-3">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl drop-shadow-sm">🍽️</span>
+        <h3 class="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">Mesas Activas en Salón</h3>
+      </div>
+      <span class="rounded-full bg-red-50 px-4 py-1.5 text-xs font-bold text-red-600 border border-red-100 w-max shadow-sm">
         {{ mesasAbiertas.length }} pendientes
       </span>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
       @if (mesasAbiertas.length === 0) {
-        <div class="col-span-full rounded-lg border border-dashed border-emerald-500 bg-emerald-50 p-6 text-center">
-          <p class="font-semibold text-emerald-800">✨ ¡Todo al día! No hay cuentas pendientes de pago en este momento.</p>
+        <div class="col-span-full rounded-xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 p-8 text-center">
+          <span class="text-3xl mb-2 block">✨</span>
+          <p class="font-bold text-emerald-800">¡Todo al día! No hay cuentas pendientes de pago.</p>
         </div>
       } @else {
         @for (mesaNum of mesasAbiertas; track mesaNum) {
           <button 
             type="button"
-            class="flex items-center gap-3 rounded-lg border p-3 text-left transition-all duration-150 cursor-pointer"
-            [class.border-emerald-600]="numeroMesa === mesaNum.toString()"
+            class="flex items-center gap-3 rounded-xl border p-3 text-left transition-all duration-200 cursor-pointer shadow-sm hover:shadow"
+            [class.border-emerald-500]="numeroMesa === mesaNum.toString()"
             [class.bg-emerald-50]="numeroMesa === mesaNum.toString()"
-            [class.ring-2]="numeroMesa === mesaNum.toString()"
-            [class.ring-emerald-600/20]="numeroMesa === mesaNum.toString()"
-            [class.border-gray-300]="numeroMesa !== mesaNum.toString()"
+            [class.ring-4]="numeroMesa === mesaNum.toString()"
+            [class.ring-emerald-500/10]="numeroMesa === mesaNum.toString()"
+            [class.border-gray-200]="numeroMesa !== mesaNum.toString()"
             [class.bg-white]="numeroMesa !== mesaNum.toString()"
             [class.hover:bg-gray-50]="numeroMesa !== mesaNum.toString()"
             [class.hover:border-emerald-300]="numeroMesa !== mesaNum.toString()"
-            (click)="seleccionarMesa(mesaNum)"
-            [attr.aria-pressed]="numeroMesa === mesaNum.toString()">
+            (click)="seleccionarMesa(mesaNum)">
             
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-xl"
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xl shadow-inner transition-colors"
                  [class.bg-emerald-200]="numeroMesa === mesaNum.toString()"
-                 [class.text-emerald-800]="numeroMesa === mesaNum.toString()"
+                 [class.text-emerald-900]="numeroMesa === mesaNum.toString()"
                  [class.bg-gray-100]="numeroMesa !== mesaNum.toString()"
-                 [class.text-gray-700]="numeroMesa !== mesaNum.toString()">
+                 [class.text-gray-600]="numeroMesa !== mesaNum.toString()">
               🪑
             </div>
             
             <div class="flex flex-col">
               <span class="font-bold text-sm text-gray-900">Mesa {{ mesaNum }}</span>
-              <span class="text-[11px] font-bold text-red-600 uppercase tracking-wider">Por Cobrar</span>
+              <span class="text-[10px] font-black text-red-500 uppercase tracking-wider">Por Cobrar</span>
             </div>
           </button>
         }
@@ -50,70 +88,70 @@
     </div>
   </section>
 
-  <div class="mb-6 rounded-xl border border-gray-300 bg-white p-6 shadow-sm">
+  <div class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-sm">
     <div class="max-w-lg">
-      <label for="inputMesa" class="mb-2 block text-xs font-bold uppercase tracking-wider text-gray-900">
+      <label for="inputMesa" class="mb-2.5 block text-xs font-black uppercase tracking-wider text-gray-500">
         Búsqueda Rápida de Comanda
       </label>
-      <div class="flex gap-2">
+      <div class="flex flex-col sm:flex-row gap-3">
         <div class="relative flex flex-1 items-center">
-          <span class="absolute left-3 font-bold text-gray-900">#</span>
+          <span class="absolute left-4 font-black text-gray-400">#</span>
           <input 
             id="inputMesa"
             type="number" 
             [(ngModel)]="numeroMesa" 
-            placeholder="Ingrese número de mesa..." 
+            placeholder="Ingrese número..." 
             (keyup.enter)="buscarMesa()"
-            class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-7 pr-3 font-semibold text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 font-bold text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm"
           />
         </div>
         <button type="button" (click)="buscarMesa()" 
-                class="flex items-center justify-center rounded-lg border-2 border-gray-900 bg-transparent px-5 py-2 text-sm font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-150 cursor-pointer whitespace-nowrap">
-          🔍 Consultar Cuenta
+                class="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border-2 border-gray-900 bg-transparent px-6 py-3 text-sm font-black text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 cursor-pointer whitespace-nowrap">
+          <span>🔍</span> Consultar Cuenta
         </button>
       </div>
     </div>
   </div>
 
   @if (pedidoActivo) {
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 items-start">
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-3 items-start animate-fade-in">
       
-      <article class="rounded-xl border border-gray-300 bg-white shadow-sm overflow-hidden lg:col-span-2">
-        <div class="flex items-center justify-between border-b border-gray-300 bg-gray-100 p-4">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">🧾</span>
-            <h3 class="text-sm font-bold text-gray-900">Detalle de Consumo — Mesa {{ pedidoActivo.mesa }}</h3>
+      <article class="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden xl:col-span-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 bg-gray-50 p-4 sm:p-5 gap-3">
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">🧾</span>
+            <h3 class="text-sm font-black text-gray-900 tracking-tight">Detalle de Consumo — Mesa {{ pedidoActivo.mesa }}</h3>
           </div>
-          <span class="rounded-full bg-emerald-100 border border-emerald-300 px-3 py-1 text-xs font-bold text-emerald-800">
+          <span class="rounded-full bg-white border border-gray-200 px-3.5 py-1.5 text-[11px] font-bold text-gray-600 shadow-sm w-max">
             🕒 {{ pedidoActivo.fecha | date:'dd/MM/yyyy HH:mm' }}
           </span>
         </div>
         
         <div class="w-full overflow-x-auto">
-          <table class="w-full border-collapse text-left">
+          <table class="w-full border-collapse text-left whitespace-nowrap">
             <thead>
-              <tr class="bg-gray-50 border-b border-gray-300">
-                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900">Producto / Plato</th>
-                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900">Acompañamiento</th>
-                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900">Bebida</th>
-                <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-gray-900 text-right">Precio Unitario</th>
+              <tr class="bg-white border-b border-gray-100">
+                <th class="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Producto / Plato</th>
+                <th class="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Acompañamiento</th>
+                <th class="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Bebida</th>
+                <th class="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Precio Unitario</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-100">
               @for (item of listaDetalles; track item.id) {
                 <tr class="hover:bg-gray-50/50 transition-colors">
                   <td class="px-5 py-4 font-bold text-gray-900 text-sm">{{ item.menu?.nombreItem }}</td>
                   <td class="px-5 py-4 text-sm">
-                    <span [class]="item.entradaSeleccionada ? 'rounded bg-gray-100 border border-gray-300 px-2 py-0.5 font-semibold text-gray-900' : 'text-gray-400 italic font-normal'">
+                    <span [class]="item.entradaSeleccionada ? 'rounded-md bg-gray-100 border border-gray-200 px-2.5 py-1 font-semibold text-gray-700 text-xs' : 'text-gray-400 italic font-medium text-xs'">
                       {{ item.entradaSeleccionada || 'Sin Entrada' }}
                     </span>
                   </td>
                   <td class="px-5 py-4 text-sm">
-                    <span [class]="item.bebidaSeleccionada ? 'rounded bg-gray-100 border border-gray-300 px-2 py-0.5 font-semibold text-gray-900' : 'text-gray-400 italic font-normal'">
+                    <span [class]="item.bebidaSeleccionada ? 'rounded-md bg-gray-100 border border-gray-200 px-2.5 py-1 font-semibold text-gray-700 text-xs' : 'text-gray-400 italic font-medium text-xs'">
                       {{ item.bebidaSeleccionada || 'Sin Bebida' }}
                     </span>
                   </td>
-                  <td class="px-5 py-4 text-right font-bold text-gray-900 text-sm tabular-nums">
+                  <td class="px-5 py-4 text-right font-black text-gray-900 text-sm tabular-nums">
                     S/ {{ item.precioUnitario | number:'1.2-2' }}
                   </td>
                 </tr>
@@ -123,46 +161,76 @@
         </div>
       </article>
 
-      <aside class="rounded-xl border border-emerald-500/30 bg-white p-5 shadow-md lg:sticky lg:top-6 relative">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
-        <h3 class="mb-4 border-b border-gray-200 pb-3 font-bold text-gray-900 text-base">💵 Cierre de Comprobante</h3>
+      <aside class="rounded-2xl border border-emerald-200 bg-white p-5 sm:p-6 shadow-lg shadow-emerald-500/5 xl:sticky xl:top-6 relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+        <h3 class="mb-5 border-b border-gray-100 pb-4 font-black text-gray-900 text-base flex items-center gap-2">
+          <span>💵</span> Cierre de Comprobante
+        </h3>
         
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-col gap-1.5">
-            <label for="selectPago" class="text-[11px] font-bold uppercase tracking-wider text-gray-500">
-              Método de Pago Seleccionado
+        <div class="flex flex-col gap-5">
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500">
+              Método de Pago
             </label>
-            <select id="selectPago" class="rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm font-semibold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none">
-              <option value="EFECTIVO">💵 Efectivo Soles</option>
-              <option value="TARJETA">💳 Tarjeta de Débito / Crédito</option>
-            </select>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <label class="cursor-pointer group">
+                <input type="radio" name="metodoPago" value="EFECTIVO" class="peer sr-only" checked>
+                <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-3 flex flex-col items-center gap-2 hover:bg-gray-100 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:shadow-sm transition-all">
+                  <img src="assets/icons/efectivo.png" alt="Efectivo" class="w-8 h-8 object-contain transition-transform group-active:scale-95">
+                  <span class="text-[11px] font-bold text-gray-600 peer-checked:text-emerald-800">Efectivo</span>
+                </div>
+              </label>
+
+              <label class="cursor-pointer group">
+                <input type="radio" name="metodoPago" value="TARJETA" class="peer sr-only">
+                <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-3 flex flex-col items-center gap-2 hover:bg-gray-100 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:shadow-sm transition-all">
+                  <img src="assets/icons/tarjeta.png" alt="Tarjeta" class="w-8 h-8 object-contain transition-transform group-active:scale-95">
+                  <span class="text-[11px] font-bold text-gray-600 peer-checked:text-amber-800">Tarjeta</span>
+                </div>
+              </label>
+
+              <label class="cursor-pointer group">
+                <input type="radio" name="metodoPago" value="YAPE" class="peer sr-only">
+                <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-3 flex flex-col items-center gap-2 hover:bg-gray-100 peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:shadow-sm transition-all">
+                  <img src="assets/icons/yape.png" alt="Yape" class="w-8 h-8 object-contain transition-transform group-active:scale-95">
+                  <span class="text-[11px] font-bold text-gray-600 peer-checked:text-purple-800">Yape</span>
+                </div>
+              </label>
+
+              <label class="cursor-pointer group">
+                <input type="radio" name="metodoPago" value="PLIN" class="peer sr-only">
+                <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-3 flex flex-col items-center gap-2 hover:bg-gray-100 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:shadow-sm transition-all">
+                  <img src="assets/icons/plin.png" alt="Plin" class="w-8 h-8 object-contain transition-transform group-active:scale-95">
+                  <span class="text-[11px] font-bold text-gray-600 peer-checked:text-blue-800">Plin</span>
+                </div>
+              </label>
+            </div>
           </div>
           
-          <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 flex flex-col gap-2">
-            <div class="flex justify-between items-center text-xs text-gray-700">
+          <div class="rounded-xl border border-gray-100 bg-gray-50/80 p-4 flex flex-col gap-3">
+            <div class="flex justify-between items-center text-xs text-gray-600 font-medium">
               <span>Items de Menú Diario:</span>
-              <span class="font-bold text-gray-900 bg-gray-200 px-2 py-0.5 rounded-full text-[11px]">{{ pedidoActivo.cantidadMenu || 0 }} u.</span>
+              <span class="font-black text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] shadow-sm">{{ pedidoActivo.cantidadMenu || 0 }} u.</span>
             </div>
-            <div class="flex justify-between items-center text-xs text-gray-700">
+            <div class="flex justify-between items-center text-xs text-gray-600 font-medium">
               <span>Platos a la Carta:</span>
-              <span class="font-bold text-gray-900 bg-gray-200 px-2 py-0.5 rounded-full text-[11px]">{{ pedidoActivo.cantidadEspecial || 0 }} u.</span>
+              <span class="font-black text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] shadow-sm">{{ pedidoActivo.cantidadEspecial || 0 }} u.</span>
             </div>
           </div>
           
-          <hr class="border-t border-dashed border-gray-300 my-1">
-          
-          <div class="flex items-center justify-between rounded-lg border border-emerald-400 bg-emerald-50 p-4 shadow-inner">
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Total Neto a Cobrar:</span>
-            <span class="text-2xl font-black text-emerald-700 tracking-tight tabular-nums">
+          <div class="flex items-center justify-between rounded-xl border-2 border-emerald-500 bg-emerald-50 p-5 shadow-inner mt-2">
+            <span class="text-xs font-black uppercase tracking-widest text-emerald-800">Total a Cobrar</span>
+            <span class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tighter tabular-nums drop-shadow-sm">
               S/ {{ pedidoActivo.montoTotal | number:'1.2-2' }}
             </span>
           </div>
         </div>
 
-        <div class="mt-5">
+        <div class="mt-6">
           <button type="button" (click)="cobrarYEmitirBoleta()" 
-                  class="w-full rounded-lg bg-emerald-600 p-3.5 text-sm font-extrabold text-gray-900 border-2 border-emerald-700 shadow-md hover:bg-emerald-500 transition-all duration-150 cursor-pointer active:scale-[0.99]">
-            🖨️ Procesar Pago y Emitir Boleta
+                  class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#10b981] p-4 text-sm font-black text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-500 hover:scale-[1.02] transition-all duration-200 cursor-pointer active:scale-[0.98]">
+            <span class="text-lg">🖨️</span> Procesar y Emitir Boleta
           </button>
         </div>
       </aside>

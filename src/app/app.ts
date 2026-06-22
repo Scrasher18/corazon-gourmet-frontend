@@ -7,7 +7,7 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: '../styles.css', 
-  encapsulation: ViewEncapsulation.None // 
+  encapsulation: ViewEncapsulation.None 
 })
 export class App {
   title = 'corazon-gourmet-frontend';

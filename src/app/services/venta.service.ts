@@ -7,27 +7,27 @@ import { Observable } from 'rxjs';
 })
 export class VentaService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/ventas';
-  private apiPedidosUrl = 'http://localhost:8080/api/pedidos'; 
-
+  private apiUrl = 'http://localhost:8080/api/pedidos'; 
 
   guardarPedidoMesa(pedidoData: any): Observable<any> {
-    return this.http.post<any>(`${this.apiPedidosUrl}/guardar`, pedidoData);
+    return this.http.post<any>(`${this.apiUrl}/guardar`, pedidoData);
   }
-
 
   obtenerMesaActiva(numMesa: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/mesa-activa/${numMesa}`);
   }
 
-
   procesarCierreMesa(numMesa: number, metodoPago: string): Observable<Blob> {
-    return this.http.post(`${this.apiUrl}/procesar-cierre/${numMesa}?metodoPago=${metodoPago}`, {}, {
+    return this.http.put(`${this.apiUrl}/cerrar-mesa/${numMesa}?metodoPago=${metodoPago}`, {}, {
       responseType: 'blob' 
     });
   }
 
   listarHistorial(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/historial`);
+  }
+
+  obtenerMesasActivas(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/activos`);
   }
 }

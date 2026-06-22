@@ -1,72 +1,89 @@
-<div class="reporte-container">
-  <div class="modulo-header">
-    <div class="header-info">
-      <h2>Historial de Pedidos y Reporte de Caja</h2>
-      <p>Visualiza, busca y supervisa las cuentas del restaurante, montos totales y estados de pago en tiempo real.</p>
+<div class="p-4 md:p-6 bg-slate-50 min-h-screen">
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-y-4">
+    <div>
+      <h2 class="text-xl md:text-2xl font-black text-[#4A3525]">Historial de Ventas</h2>
+      <p class="text-xs md:text-sm text-[#A39183]">Consulta el registro detallado de todos los pedidos atendidos.</p>
     </div>
   </div>
 
-  <div class="filter-bar">
-    <input 
-      type="text" 
-      placeholder="Buscar por N° de mesa, cliente o DNI..." 
-      class="search-input" 
-      [(ngModel)]="txtBuscar" 
-    />
+  <div class="mb-6 flex flex-col md:flex-row gap-4">
+    <div class="relative w-full md:w-96 group">
+      <lucide-icon [img]="SearchIcon" class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-[#A39183] group-focus-within:text-[#D96C6B] transition-colors pointer-events-none"></lucide-icon>
+      <input type="text" placeholder="Buscar por Mesa, Mesero o Cajero..." 
+             class="w-full py-3 pr-4 pl-14 rounded-xl border border-[#E3D5CA] focus:border-[#D96C6B] focus:ring-4 focus:ring-[#D96C6B]/10 outline-none transition-all text-[#4A3525] font-medium placeholder:text-[#A39183]/70 text-sm md:text-base" 
+             [(ngModel)]="txtBuscar" />
+    </div>
+
+    <select class="w-full md:w-48 py-3 px-4 rounded-xl border border-[#E3D5CA] focus:border-[#D96C6B] focus:ring-4 focus:ring-[#D96C6B]/10 outline-none transition-all text-[#4A3525] font-medium bg-white text-sm md:text-base cursor-pointer" [(ngModel)]="filtroTiempo">
+      <option value="TODOS">Todas las Fechas</option>
+      <option value="HOY">Día de Hoy</option>
+      <option value="MES">Este Mes</option>
+    </select>
   </div>
 
-  <div class="table-responsive">
-    <table class="data-table">
-      <thead>
+  <div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-[#E3D5CA]">
+    <table class="w-full text-left min-w-[1000px]">
+      <thead class="bg-[#FDFBF9] border-b border-[#E3D5CA]">
         <tr>
-          <th>ID Pedido</th>
-          <th>Mesa</th>
-          <th>Fecha / Hora</th>
-          <th>Cliente</th>
-          <th>DNI</th>
-          <th>Tarifa CONADIS</th>
-          <th>Forma de Pago</th>
-          <th>Monto Total</th>
-          <th>Estado</th>
-          <th>Atendido por</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Fecha y Hora</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap text-center">Mesa</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Cliente</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Atendido por</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-emerald-700 uppercase whitespace-nowrap">Cobrado por</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap">Método</th>
+          <th class="p-3 md:p-4 text-[10px] md:text-[11px] font-black tracking-wider text-[#A39183] uppercase whitespace-nowrap text-right">Total (S/)</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="divide-y divide-[#E3D5CA]/50">
         @for (pedido of pedidosFiltrados; track pedido.id) {
-          <tr>
-            <td><strong style="color: #64748b;">#{{ pedido.id }}</strong></td>
-            <td><span class="mesa-badge">Mesa {{ pedido.mesa }}</span></td>
-            <td>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-            <td><strong>{{ pedido.nombreCliente || 'Público General' }}</strong></td>
-            <td>{{ pedido.dniCliente || '-' }}</td>
-            <td>
-              <span class="badge" [class.badge-conadis]="pedido.esConadis" [class.badge-normal]="!pedido.esConadis">
-                {{ pedido.esConadis ? 'Sí (Descuento)' : 'No' }}
+          <tr class="hover:bg-[#FDFBF9] transition-colors group">
+            <td class="p-3 md:p-4 whitespace-nowrap">
+              <div class="flex flex-col">
+                <span class="font-black text-[#4A3525] text-sm">{{ pedido.fecha | date:'dd/MM/yyyy' }}</span>
+                <span class="text-xs font-bold text-[#A39183]">{{ pedido.fecha | date:'hh:mm a' }}</span>
+              </div>
+            </td>
+            <td class="p-3 md:p-4 text-center">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#E3D5CA]/30 text-[#4A3525] font-black text-sm">
+                {{ pedido.mesa }}
               </span>
             </td>
-            <td>
-              <strong style="color: #475569;">
-                {{ pedido.metodoPago || '- Pendiente -' }}
-              </strong>
+            <td class="p-3 md:p-4">
+              <div class="flex flex-col">
+                <span class="font-bold text-[#4A3525] text-sm whitespace-nowrap">Público General</span>
+              </div>
             </td>
-            <td><strong style="color: #0f172a;">S/ {{ pedido.montoTotal | number:'1.2-2' }}</strong></td>
-            <td>
-              <span class="badge" 
-                    [class.badge-active]="pedido.estado === 'PAGADA'" 
-                    [class.badge-pending]="pedido.estado === 'ABIERTA'">
-                {{ pedido.estado }}
+            <td class="p-3 md:p-4 font-medium text-[#4A3525] text-sm whitespace-nowrap">
+              {{ pedido.usuario ? pedido.usuario.nombre + ' ' + pedido.usuario.apellido : 'No registrado' }}
+            </td>
+            <td class="p-3 md:p-4 font-bold text-emerald-700 text-sm whitespace-nowrap bg-emerald-50/30">
+              {{ pedido.cajero ? pedido.cajero.nombre + ' ' + pedido.cajero.apellido : 'No registrado' }}
+            </td>
+            <td class="p-3 md:p-4">
+              <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider whitespace-nowrap"
+                    [ngClass]="{
+                      'bg-emerald-50 text-emerald-700 border border-emerald-200': pedido.metodoPago === 'EFECTIVO',
+                      'bg-purple-50 text-purple-700 border border-purple-200': pedido.metodoPago === 'YAPE',
+                      'bg-blue-50 text-blue-700 border border-blue-200': pedido.metodoPago === 'PLIN',
+                      'bg-amber-50 text-amber-700 border border-amber-200': pedido.metodoPago === 'TARJETA'
+                    }">
+                {{ pedido.metodoPago || 'EFECTIVO' }}
               </span>
             </td>
-            <td>
-              <span class="badge-mesero">
-                👤 {{ pedido.usuario?.nombre || 'Sistema' }} {{ pedido.usuario?.apellido || '' }}
-              </span>
+            <td class="p-3 md:p-4 text-right">
+              <span class="font-black text-lg text-[#D96C6B]">S/ {{ pedido.montoTotal | number:'1.2-2' }}</span>
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="10" class="text-center" style="color: #7e8299; padding: 40px;">
-              No se encontraron registros de pedidos que coincidan con la búsqueda.
+            <td colspan="7" class="py-16 text-center">
+              <div class="flex flex-col items-center justify-center">
+                <div class="w-16 h-16 bg-[#FDFBF9] border-2 border-[#E3D5CA] rounded-2xl flex items-center justify-center mb-4 text-[#A39183]">
+                  <lucide-icon [img]="ReceiptIcon" class="w-8 h-8 opacity-50"></lucide-icon>
+                </div>
+                <h4 class="text-[#4A3525] font-black mb-1">Sin historial</h4>
+                <p class="text-sm text-[#A39183]">No se encontraron pedidos en estas fechas o con esos filtros.</p>
+              </div>
             </td>
           </tr>
         }

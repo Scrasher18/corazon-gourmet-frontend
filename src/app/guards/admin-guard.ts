@@ -8,7 +8,6 @@ export const adminGuard: CanActivateFn = (route, state) => {
 
 
   if (!authService.isLoggedIn()) {
-    console.warn('⚠️ Intento de acceso sin token. Redireccionando al login.');
     router.navigate(['/login']);
     return false;
   }
@@ -26,11 +25,11 @@ export const adminGuard: CanActivateFn = (route, state) => {
 
   
   if (rolesPermitidos.includes(rolUsuario || '')) {
-    return true; // Acceso concedido
+    return true; 
   }
 
 
-  console.error(`🚫 El rol [${rolUsuario}] no tiene permisos para acceder a: ${state.url}`);
+  
   router.navigate(['/login']);
   return false;
 };

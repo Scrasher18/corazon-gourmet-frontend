@@ -1,59 +1,101 @@
-<div class="dashboard-container">
-  <aside class="sidebar">
-    <div class="logo-section">
-      <h2>Corazón Gourmet</h2>
-      <span class="role-badge" [ngClass]="'badge-' + usuarioRol.toLowerCase()">{{ usuarioRol }}</span>
+<div class="flex h-screen bg-[#F9F6F0] overflow-hidden font-sans relative">
+  
+  @if (menuAbierto) {
+    <div (click)="cerrarMenu()" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden animate-fade-in"></div>
+  }
+
+  <aside class="fixed md:static inset-y-0 left-0 z-40 w-72 bg-white border-r border-[#E3D5CA] flex flex-col shadow-2xl md:shadow-[4px_0_24px_rgba(74,53,37,0.05)] transform transition-transform duration-300 ease-in-out"
+         [ngClass]="menuAbierto ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+    
+    <div class="p-6 border-b border-[#E3D5CA] flex flex-col items-center justify-center space-y-3 relative">
+      <button (click)="cerrarMenu()" class="absolute top-4 right-4 md:hidden p-2 text-[#A39183] hover:text-[#D96C6B] hover:bg-slate-100 rounded-xl transition-all">
+        <lucide-icon [img]="XIcon" class="w-5 h-5"></lucide-icon>
+      </button>
+
+      <div class="w-16 h-16 rounded-full border-2 border-[#D96C6B] overflow-hidden shadow-sm">
+        <img src="/assets/images/logo.png" alt="Logo" class="w-full h-full object-cover">
+      </div>
+      <h2 class="text-xl font-black text-[#4A3525] tracking-tight text-center leading-tight">Corazón Gourmet</h2>
+      <span [class]="'px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ' + getRolClass()">
+        {{ usuarioRol }}
+      </span>
     </div>
     
-    <nav class="nav-menu">
+    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+      
       @if (usuarioRol === 'MESERO' || usuarioRol === 'ADMINISTRADOR') {
-        <a routerLink="pedido-registro" routerLinkActive="active" class="nav-item">
-          <i class="icon-home"></i> Registrar Comanda
+        <a routerLink="pedido-registro" routerLinkActive="bg-[#FDFBF9] text-[#D96C6B] border-[#D96C6B]" (click)="cerrarMenu()" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-black text-[#6B5140] hover:bg-[#FDFBF9] hover:text-[#D96C6B] border border-transparent transition-all group cursor-pointer">
+          <lucide-icon [img]="HomeIcon" class="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"></lucide-icon>
+          Registrar Pedidos
         </a>
       }
 
       @if (usuarioRol === 'CAJA' || usuarioRol === 'ADMINISTRADOR') {
-        <a routerLink="caja-cobros" routerLinkActive="active" class="nav-item">
-          <i class="icon-cash"></i> Módulo de Caja (Cobros)
+        <a routerLink="caja-cobros" routerLinkActive="bg-[#FDFBF9] text-[#D96C6B] border-[#D96C6B]" (click)="cerrarMenu()" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-black text-[#6B5140] hover:bg-[#FDFBF9] hover:text-[#D96C6B] border border-transparent transition-all group cursor-pointer">
+          <lucide-icon [img]="BanknoteIcon" class="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"></lucide-icon>
+          Módulo de Caja
         </a>
       }
 
-      @if (usuarioRol === 'MESERO' || usuarioRol === 'ADMINISTRADOR') {
-        <a routerLink="pedido-reporte" routerLinkActive="active" class="nav-item">
-          <i class="icon-orders"></i> Historial de Ventas
+      @if (usuarioRol === 'CAJA' || usuarioRol === 'ADMINISTRADOR') {
+        <a routerLink="pedido-reporte" routerLinkActive="bg-[#FDFBF9] text-[#D96C6B] border-[#D96C6B]" (click)="cerrarMenu()" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-black text-[#6B5140] hover:bg-[#FDFBF9] hover:text-[#D96C6B] border border-transparent transition-all group cursor-pointer">
+          <lucide-icon [img]="HistoryIcon" class="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"></lucide-icon>
+          Historial de Ventas
         </a>
       }
 
       @if (usuarioRol === 'ADMINISTRADOR') {
-        <div class="admin-divider">ADMINISTRACIÓN</div>
-        <a routerLink="admin-inicio" routerLinkActive="active" class="nav-item">
-          <i class="icon-metrics"></i> Dashboard Métricas
+        <div class="pt-6 pb-2 px-4">
+          <p class="text-[10px] font-black text-[#A39183] uppercase tracking-widest">Administración</p>
+        </div>
+        
+        <a routerLink="admin-inicio" routerLinkActive="bg-[#FDFBF9] text-[#D96C6B] border-[#D96C6B]" (click)="cerrarMenu()" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-black text-[#6B5140] hover:bg-[#FDFBF9] hover:text-[#D96C6B] border border-transparent transition-all group cursor-pointer">
+          <lucide-icon [img]="ChartIcon" class="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"></lucide-icon>
+          Métricas
         </a>
-        <a routerLink="menu-gestion" routerLinkActive="active" class="nav-item">
-          <i class="icon-menu"></i> Menús y Platos
+        <a routerLink="menu-gestion" routerLinkActive="bg-[#FDFBF9] text-[#D96C6B] border-[#D96C6B]" (click)="cerrarMenu()" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-black text-[#6B5140] hover:bg-[#FDFBF9] hover:text-[#D96C6B] border border-transparent transition-all group cursor-pointer">
+          <lucide-icon [img]="MenuIcon" class="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"></lucide-icon>
+          Menús y Platos
         </a>
-        <a routerLink="usuario-gestion" routerLinkActive="active" class="nav-item">
-          <i class="icon-users"></i> Gestión de Usuarios
+        <a routerLink="usuario-gestion" routerLinkActive="bg-[#FDFBF9] text-[#D96C6B] border-[#D96C6B]" (click)="cerrarMenu()" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-black text-[#6B5140] hover:bg-[#FDFBF9] hover:text-[#D96C6B] border border-transparent transition-all group cursor-pointer">
+          <lucide-icon [img]="UsersIcon" class="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"></lucide-icon>
+          Gestión de Usuarios
         </a>
       }
     </nav>
 
-    <div class="sidebar-footer">
-      <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+    <div class="p-4 border-t border-[#E3D5CA] bg-[#FDFBF9]">
+      <button (click)="logout()" class="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-white border-2 border-[#E3D5CA] text-[#8C7667] text-sm font-black rounded-xl hover:bg-[#F9F6F0] hover:text-[#D96C6B] hover:border-[#D96C6B] transition-all active:scale-95">
+        <lucide-icon [img]="LogoutIcon" class="w-4 h-4"></lucide-icon>
+        Cerrar Sesión
+      </button>
     </div>
   </aside>
 
-  <div class="main-layout">
-    <header class="content-header">
-      <div class="header-title">
-        <h1>{{ usuarioRol === 'ADMINISTRADOR' ? 'Panel de Administración' : 'Panel de Operaciones' }}</h1>
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+    
+    <header class="h-16 md:h-20 bg-white border-b border-[#E3D5CA] flex items-center justify-between px-4 md:px-8 shadow-sm z-10 shrink-0">
+      <div class="flex items-center gap-3">
+        <button (click)="toggleMenu()" class="md:hidden p-2 text-[#4A3525] hover:bg-slate-100 rounded-xl transition-colors">
+          <lucide-icon [img]="HamburgerIcon" class="w-6 h-6"></lucide-icon>
+        </button>
+        
+        <div>
+          <h1 class="text-lg md:text-xl font-black text-[#4A3525] leading-tight">
+            {{ usuarioRol === 'ADMINISTRADOR' ? 'Administración' : 'Operaciones' }}
+          </h1>
+          <p class="hidden sm:block text-xs font-bold text-[#A39183] mt-0.5">Sistema de Gestión e Inclusión</p>
+        </div>
       </div>
-      <div class="user-profile">
-        <span>Bienvenido, <strong>{{ usuarioNombre }}</strong></span>
+      
+      <div class="flex items-center gap-2 md:gap-3 bg-[#FDFBF9] px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-[#E3D5CA]">
+        <lucide-icon [img]="UserCircleIcon" class="w-5 h-5 md:w-6 md:h-6 text-[#D96C6B]"></lucide-icon>
+        <span class="text-xs md:text-sm font-bold text-[#4A3525] hidden sm:inline">Bienvenido, <span class="font-black text-[#D96C6B]">{{ usuarioNombre }}</span></span>
+        <span class="text-xs font-black text-[#D96C6B] sm:hidden">{{ usuarioNombre }}</span>
       </div>
     </header>
 
-    <main class="main-content">
+    <main class="flex-1 overflow-auto p-4 md:p-8 relative bg-[#F9F6F0]">
       <router-outlet></router-outlet>
     </main>
   </div>

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
- export interface Usuario {
+export interface Usuario {
   dni: string;
   nombre: string;
   apellido: string;
@@ -37,5 +37,9 @@ export class UsuarioService {
 
   eliminarUsuario(dni: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${dni}`);
+  }
+
+  cambiarPassword(dto: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/cambiar-password`, dto);
   }
 }

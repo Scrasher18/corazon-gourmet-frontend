@@ -2,17 +2,24 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { MenuService, Menu } from '../../services/menu.service'; 
+import { LucideAngularModule, Search, Plus, Pencil, Power, Trash2 } from 'lucide-angular';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-menu-gestion',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './menu-gestion.html',
   styleUrl: './menu-gestion.css'
 })
 export class MenuGestion implements OnInit {
   private menuService = inject(MenuService);
+
+  readonly SearchIcon = Search;
+  readonly PlusIcon = Plus;
+  readonly PencilIcon = Pencil;
+  readonly PowerIcon = Power;
+  readonly Trash2Icon = Trash2;
 
   listaMenus: Menu[] = [];
   txtBuscar: string = '';
@@ -151,7 +158,7 @@ export class MenuGestion implements OnInit {
       Swal.fire({
         icon: 'warning',
         title: 'Verifica el precio',
-        text: 'Los platos de fondo, platos especiales, bebidas extras y postres deben tener un precio mayor a 0.',
+        text: 'Los platos de fondo, especiales, bebidas extras y postres deben tener un precio mayor a 0.',
         confirmButtonColor: '#dc2626'
       });
       return;
